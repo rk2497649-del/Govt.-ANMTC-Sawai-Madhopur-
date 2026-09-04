@@ -1222,3 +1222,25 @@ button * {
 <div class="shivam-footer">
   <span>✨ Site Managed by Shivam Soni ✨</span>
 </div>
+<style>
+/* OLD FOOTER HIDE */
+.shivam-footer{
+  display:none !important;
+}
+
+/* NEW SINGLE FOOTER */
+body::after{
+  content:"✨ Site Managed by Shivam Soni ✨";
+  display:block;
+  text-align:center;
+  margin:30px 10px;
+  padding:12px 20px;
+  color:#8f164b;
+  background:#ffffff;
+  border:2px solid #e7a9c4;
+  border-radius:30px;
+  font-size:15px;
+  font-weight:700;
+  box-shadow:0 6px 20px rgba(143,22,75,.16);
+}
+</style>
