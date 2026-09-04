@@ -1011,4 +1011,344 @@ function sendWhatsApp(){
 
                 message +=
                     "🌞 Complete Attendance: ✅ Completed%0A" +
-                    "🕐 Time: " + data.dat
+                    "🕐 Time: " + data.dateTime + "%0A" +
+                    "📍 Location: " +
+                    data.latitude + ", " +
+                    data.longitude + "%0A%0A";
+            }
+
+        }catch(e){}
+    }
+
+
+    message +=
+        "Sent from ANM Attendance System.";
+
+
+    const whatsappURL =
+        "https://wa.me/" +
+        SIR_NUMBER +
+        "?text=" +
+        message;
+
+    window.open(whatsappURL,"_blank");
+}
+
+
+/* INITIAL DISPLAY */
+
+displayTodayAttendance();
+
+</script>
+
+</body>
+</html>
+<style>
+body{
+background:linear-gradient(135deg,#fff0f7,#ffd6e8,#f8d9ff)!important;
+color:#4a1935!important;
+}
+
+.header{
+background:linear-gradient(135deg,#c2185b,#e91e63,#ad1457)!important;
+box-shadow:0 10px 30px rgba(194,24,91,.35)!important;
+}
+
+.card{
+border:1px solid #f3bfd5!important;
+box-shadow:0 10px 28px rgba(194,24,91,.15)!important;
+}
+
+.card h2{
+color:#c2185b!important;
+}
+
+input,select{
+border-color:#e5aec8!important;
+background:#fffafd!important;
+}
+
+input:focus,select:focus{
+border-color:#e91e63!important;
+box-shadow:0 0 0 3px rgba(233,30,99,.15)!important;
+}
+
+.primary{
+background:linear-gradient(135deg,#c2185b,#e91e63)!important;
+}
+
+.success{
+background:linear-gradient(135deg,#ad1457,#8e24aa)!important;
+}
+
+.whatsapp{
+background:#25D366!important;
+}
+
+.shivam-footer{
+text-align:center;
+padding:30px 10px;
+font-size:15px;
+font-weight:bold;
+color:#a41456;
+}
+
+.shivam-footer span{
+display:inline-block;
+padding:11px 24px;
+border-radius:30px;
+background:linear-gradient(135deg,#fff,#ffe8f3);
+border:1px solid #efbfd4;
+box-shadow:0 6px 18px rgba(194,24,91,.18);
+}
+</style>
+
+<div class="shivam-footer">
+<span>✨ Site Managed by Shivam Soni ✨</span>
+</div>
+<style>
+/* ===== PREMIUM PINK + CLEAR TEXT THEME ===== */
+
+body {
+  background: linear-gradient(135deg, #fff7fb, #ffe8f2, #f9eaff) !important;
+  color: #241525 !important;
+}
+
+/* Header */
+.header {
+  background: linear-gradient(135deg, #9c1450, #d81b60, #b01265) !important;
+  color: #ffffff !important;
+}
+
+.header * {
+  color: #ffffff !important;
+}
+
+/* All Cards */
+.card {
+  background: #ffffff !important;
+  color: #241525 !important;
+  border: 1px solid #f1bfd4 !important;
+  box-shadow: 0 8px 25px rgba(156,20,80,.14) !important;
+}
+
+.card h1,
+.card h2,
+.card h3 {
+  color: #8f164b !important;
+}
+
+.card p,
+.card label,
+.card span {
+  color: #332333 !important;
+}
+
+/* Input & Select */
+input,
+select,
+textarea {
+  background: #ffffff !important;
+  color: #211421 !important;
+  border: 2px solid #e5b5ca !important;
+}
+
+input::placeholder {
+  color: #77707a !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #d81b60 !important;
+  box-shadow: 0 0 0 3px rgba(216,27,96,.12) !important;
+  outline: none !important;
+}
+
+/* Buttons */
+.primary {
+  background: linear-gradient(135deg, #9c1450, #d81b60) !important;
+  color: #ffffff !important;
+}
+
+.success {
+  background: linear-gradient(135deg, #8e1450, #b51672) !important;
+  color: #ffffff !important;
+}
+
+.whatsapp {
+  background: #20b957 !important;
+  color: #ffffff !important;
+}
+
+/* Button text always visible */
+button,
+button * {
+  color: #ffffff !important;
+}
+
+/* Attendance Status */
+.status,
+.badge {
+  color: #ffffff !important;
+}
+
+/* ===== FOOTER ===== */
+
+.shivam-footer {
+  text-align: center;
+  padding: 30px 10px 35px;
+  color: #6d123d !important;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.shivam-footer span {
+  display: inline-block;
+  padding: 11px 24px;
+  border-radius: 30px;
+  background: #ffffff;
+  color: #8f164b !important;
+  border: 2px solid #e7a9c4;
+  box-shadow: 0 6px 20px rgba(143,22,75,.16);
+}
+
+/* Footer text */
+.shivam-footer span {
+  text-shadow: none !important;
+}
+</style>
+
+<div class="shivam-footer">
+  <span>✨ Site Managed by Shivam Soni ✨</span>
+</div>
+<style>
+/* OLD FOOTER HIDE */
+.shivam-footer{
+  display:none !important;
+}
+
+/* NEW SINGLE FOOTER */
+body::after{
+  content:"✨ Site Managed by Shivam Soni ✨";
+  display:block;
+  text-align:center;
+  margin:30px 10px;
+  padding:12px 20px;
+  color:#8f164b;
+  background:#ffffff;
+  border:2px solid #e7a9c4;
+  border-radius:30px;
+  font-size:15px;
+  font-weight:700;
+  box-shadow:0 6px 20px rgba(143,22,75,.16);
+}
+</style>
+<script>
+/* 📸 PHOTO + ATTENDANCE SHARE */
+async function shareAttendanceWithPhoto() {
+
+  const photoInput = document.querySelector('input[type="file"][accept*="image"]');
+
+  if (!photoInput || !photoInput.files || !photoInput.files[0]) {
+    alert("Pehle attendance photo click karo 📸");
+    return;
+  }
+
+  const photo = photoInput.files[0];
+
+  const name =
+    document.querySelector('#name')?.value ||
+    document.querySelector('[name="name"]')?.value ||
+    "ANM";
+
+  const roll =
+    document.querySelector('#roll')?.value ||
+    document.querySelector('[name="roll"]')?.value ||
+    "";
+
+  const facility =
+    document.querySelector('#facility')?.value ||
+    document.querySelector('[name="facility"]')?.value ||
+    "Govt. ANMTC Sawai Madhopur";
+
+  const message =
+`📋 ANM ATTENDANCE
+
+👩 ANM Name: ${name}
+🆔 Roll No: ${roll}
+🏥 Facility: ${facility}
+
+📅 Date: ${new Date().toLocaleDateString('en-IN')}
+⏰ Time: ${new Date().toLocaleTimeString('en-IN')}
+
+📸 Attendance Photo Attached`;
+
+  try {
+
+    const shareFile = new File(
+      [photo],
+      "ANM_Attendance_Photo.jpg",
+      { type: photo.type || "image/jpeg" }
+    );
+
+    if (
+      navigator.share &&
+      navigator.canShare &&
+      navigator.canShare({ files: [shareFile] })
+    ) {
+
+      await navigator.share({
+        title: "ANM Attendance",
+        text: message,
+        files: [shareFile]
+      });
+
+    } else {
+
+      alert(
+        "Is phone/browser me photo sharing supported nahi hai.\n" +
+        "WhatsApp me photo manually attach karni hogi."
+      );
+
+    }
+
+  } catch (error) {
+
+    if (error.name !== "AbortError") {
+      alert("Photo share nahi ho payi. Dobara try karo.");
+    }
+
+  }
+}
+</script>
+
+<script>
+/* Existing WhatsApp buttons ko Photo Share se connect karna */
+document.addEventListener("DOMContentLoaded", function () {
+
+  const buttons = document.querySelectorAll(
+    ".whatsapp, button"
+  );
+
+  buttons.forEach(function(button) {
+
+    const text = button.innerText.toLowerCase();
+
+    if (
+      text.includes("whatsapp") ||
+      text.includes("share attendance") ||
+      text.includes("attendance share")
+    ) {
+
+      button.onclick = function(e) {
+        e.preventDefault();
+        shareAttendanceWithPhoto();
+      };
+
+    }
+
+  });
+
+});
+</script>
