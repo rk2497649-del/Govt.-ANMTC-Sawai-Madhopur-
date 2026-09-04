@@ -3,339 +3,389 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>ANM Attendance system</title>
+<title>Govt. ANMTC Sawai Madhopur | ANM Attendance</title>
 
 <style>
 *{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-  font-family:Arial,sans-serif;
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
 }
 
 body{
-  min-height:100vh;
-  background:linear-gradient(135deg,#e0f2fe,#eef2ff);
-  padding:18px;
-}
-
-.container{
-  max-width:500px;
-  margin:auto;
+    font-family:Arial,Helvetica,sans-serif;
+    background:linear-gradient(135deg,#eef7ff,#f8faff,#eefcf7);
+    min-height:100vh;
+    color:#172033;
 }
 
 .header{
-  background:linear-gradient(135deg,#1d4ed8,#0891b2);
-  color:white;
-  padding:28px 20px;
-  border-radius:25px;
-  text-align:center;
-  box-shadow:0 12px 30px rgba(0,0,0,.15);
-  margin-bottom:18px;
+    background:linear-gradient(135deg,#123c69,#176b87,#159957);
+    color:white;
+    padding:28px 18px 34px;
+    text-align:center;
+    border-radius:0 0 28px 28px;
+    box-shadow:0 8px 25px rgba(0,0,0,.15);
 }
 
 .logo{
-  font-size:45px;
+    width:72px;
+    height:72px;
+    background:white;
+    border-radius:50%;
+    margin:0 auto 12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:34px;
+    box-shadow:0 5px 15px rgba(0,0,0,.2);
 }
 
 .header h1{
-  margin-top:8px;
-  font-size:27px;
+    font-size:23px;
+    margin-bottom:6px;
 }
 
 .header p{
-  margin-top:7px;
-  font-size:13px;
-  opacity:.9;
+    font-size:14px;
+    opacity:.9;
+}
+
+.container{
+    max-width:650px;
+    margin:-18px auto 30px;
+    padding:0 15px;
 }
 
 .card{
-  background:white;
-  border-radius:22px;
-  padding:20px;
-  margin-bottom:16px;
-  box-shadow:0 8px 25px rgba(0,0,0,.08);
+    background:white;
+    border-radius:22px;
+    padding:22px;
+    margin-bottom:18px;
+    box-shadow:0 8px 25px rgba(30,50,80,.10);
+    border:1px solid rgba(0,0,0,.05);
 }
 
-.section-title{
-  font-size:19px;
-  color:#172554;
-  font-weight:bold;
-  margin-bottom:15px;
+.card h2{
+    font-size:19px;
+    margin-bottom:17px;
+    color:#123c69;
 }
 
 label{
-  display:block;
-  font-size:13px;
-  font-weight:bold;
-  color:#334155;
-  margin:13px 0 7px;
+    display:block;
+    font-size:13px;
+    font-weight:bold;
+    margin:13px 0 7px;
+    color:#46556b;
 }
 
 input,select{
-  width:100%;
-  padding:14px;
-  border:1px solid #cbd5e1;
-  border-radius:12px;
-  font-size:15px;
-  outline:none;
+    width:100%;
+    padding:14px;
+    border:1px solid #d7dfeb;
+    border-radius:13px;
+    font-size:15px;
+    outline:none;
+    background:#fbfdff;
 }
 
 input:focus,select:focus{
-  border-color:#2563eb;
+    border-color:#159957;
+    box-shadow:0 0 0 3px rgba(21,153,87,.10);
 }
 
-button{
-  width:100%;
-  border:0;
-  padding:15px;
-  border-radius:13px;
-  margin-top:12px;
-  font-size:15px;
-  font-weight:bold;
-  color:white;
-  background:linear-gradient(135deg,#2563eb,#0891b2);
-  cursor:pointer;
-}
-
-button:disabled{
-  background:#94a3b8;
-  cursor:not-allowed;
-}
-
-.location{
-  background:#f1f5f9;
-  padding:12px;
-  border-radius:12px;
-  margin-top:10px;
-  font-size:13px;
-  color:#475569;
-}
-
-.status{
-  display:none;
-  padding:13px;
-  border-radius:12px;
-  margin-top:12px;
-  font-weight:bold;
-  text-align:center;
-}
-
-.success{
-  background:#dcfce7;
-  color:#166534;
-}
-
-.warning{
-  background:#fef3c7;
-  color:#92400e;
-}
-
-.error{
-  background:#fee2e2;
-  color:#991b1b;
+.info{
+    background:#f1f8ff;
+    border-left:4px solid #176b87;
+    padding:13px;
+    border-radius:10px;
+    font-size:13px;
+    line-height:1.6;
+    margin-bottom:15px;
 }
 
 .timebox{
-  text-align:center;
-  background:#f8fafc;
-  border-radius:15px;
-  padding:15px;
-  margin-bottom:15px;
+    text-align:center;
+    background:#f5f7fb;
+    padding:14px;
+    border-radius:15px;
+    margin-bottom:15px;
 }
 
-#clock{
-  font-size:25px;
-  font-weight:bold;
-  color:#1d4ed8;
+#currentDate{
+    font-weight:bold;
+    color:#123c69;
 }
 
-#date{
-  color:#64748b;
-  margin-top:5px;
-  font-size:13px;
+#currentTime{
+    font-size:24px;
+    font-weight:bold;
+    margin-top:5px;
+    color:#159957;
 }
 
-.photo-preview{
-  width:100%;
-  max-height:250px;
-  object-fit:cover;
-  border-radius:15px;
-  display:none;
-  margin-top:12px;
+.upload{
+    border:2px dashed #cbd6e4;
+    border-radius:15px;
+    padding:16px;
+    text-align:center;
+    background:#fafcff;
+    margin-top:10px;
 }
 
-.attendance{
-  border-left:5px solid #2563eb;
-  background:#f8fafc;
-  padding:15px;
-  border-radius:12px;
-  margin-top:10px;
-  font-size:13px;
-  line-height:1.7;
+.upload input{
+    border:0;
+    padding:8px 0;
+    background:transparent;
+}
+
+.location{
+    background:#f7fbf8;
+    padding:14px;
+    border-radius:14px;
+    margin-top:12px;
+    font-size:13px;
+    line-height:1.6;
+}
+
+button{
+    width:100%;
+    border:0;
+    border-radius:14px;
+    padding:15px;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+    margin-top:12px;
+    transition:.2s;
+}
+
+button:active{
+    transform:scale(.98);
+}
+
+.primary{
+    background:linear-gradient(135deg,#123c69,#176b87);
+    color:white;
+}
+
+.success{
+    background:linear-gradient(135deg,#11998e,#159957);
+    color:white;
 }
 
 .whatsapp{
-  background:#16a34a;
+    background:#25D366;
+    color:white;
+}
+
+button:disabled{
+    background:#cbd2da;
+    color:#6b7280;
+    cursor:not-allowed;
+}
+
+.status{
+    padding:13px;
+    border-radius:13px;
+    margin-top:13px;
+    display:none;
+    font-size:14px;
+    line-height:1.5;
+}
+
+.success-status{
+    background:#e9f9ef;
+    color:#137333;
+    border:1px solid #b7e4c7;
+}
+
+.error-status{
+    background:#fff0f0;
+    color:#b42318;
+    border:1px solid #f3b4b4;
+}
+
+.warning-status{
+    background:#fff8e6;
+    color:#8a5a00;
+    border:1px solid #f2d38a;
+}
+
+.attendance-row{
+    padding:14px;
+    border:1px solid #e1e7ef;
+    border-radius:14px;
+    margin-top:10px;
+    background:#fafcff;
+}
+
+.badge{
+    display:inline-block;
+    padding:5px 9px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:bold;
+    margin-top:6px;
+}
+
+.badge-green{
+    background:#e8f8ee;
+    color:#16803c;
+}
+
+.badge-orange{
+    background:#fff1d9;
+    color:#9a6100;
 }
 
 .footer{
-  text-align:center;
-  color:#64748b;
-  font-size:12px;
-  padding:10px;
+    text-align:center;
+    padding:20px;
+    font-size:12px;
+    color:#718096;
+}
+
+.small{
+    font-size:12px;
+    color:#718096;
+    margin-top:7px;
+    line-height:1.5;
 }
 </style>
 </head>
 
 <body>
 
+<div class="header">
+    <div class="logo">🏥</div>
+    <h1>Govt. ANMTC Sawai Madhopur</h1>
+    <p>ANM Student Attendance System</p>
+</div>
+
 <div class="container">
 
-<div class="header">
-  <div class="logo">👩‍⚕️</div>
-  <h1>ANM Attendance</h1>
-  <p>Smart Attendance & Verification System</p>
-</div>
+    <!-- STUDENT DETAILS -->
+    <div class="card">
+        <h2>👩‍⚕️ Student Details</h2>
 
-<div class="card">
+        <label>ANM Name</label>
+        <input type="text" id="anmName" placeholder="Enter ANM name">
 
-  <div class="timebox">
-    <div id="clock">00:00:00</div>
-    <div id="date">Loading...</div>
-  </div>
+        <label>Roll Number</label>
+        <input type="text" id="rollNumber" placeholder="Enter roll number">
 
-  <div id="morningStatus" class="status"></div>
-  <div id="afternoonStatus" class="status"></div>
+        <label>Hospital / Facility</label>
+        <select id="facility">
+            <option value="">Select Hospital / Facility</option>
+            <option>Govt. ANMTC Sawai Madhopur</option>
+            <option>District Hospital Sawai Madhopur</option>
+            <option>CHC</option>
+            <option>PHC</option>
+            <option>UPHC</option>
+            <option>Other</option>
+        </select>
 
-  <div class="section-title">👩‍⚕️ ANM Details</div>
-
-  <label>ANM Name</label>
-  <input type="text" id="name" placeholder="Enter ANM name">
-
-  <label>Roll Number</label>
-  <input type="text" id="roll" placeholder="Enter roll number">
-
-  <label>Hospital / Facility</label>
-  <select id="facility">
-    <option value="">Select Facility</option>
-    <option>ANMTC Sawai Madhopur</option>
-    <option>CMHO Office Sawai Madhopur</option>
-    <option>District Hospital</option>
-    <option>CHC</option>
-    <option>PHC</option>
-    <option>Other</option>
-  </select>
-
-</div>
+        <div class="small">
+            Please enter your correct details before marking attendance.
+        </div>
+    </div>
 
 
-<!-- MORNING ATTENDANCE -->
+    <!-- DATE TIME -->
+    <div class="card">
+        <h2>🕐 Current Date & Time</h2>
 
-<div class="card">
-
-  <div class="section-title">
-    🌅 Morning Attendance
-  </div>
-
-  <p style="font-size:13px;color:#64748b;margin-bottom:10px;">
-    Morning attendance: 8:00 AM onwards
-  </p>
-
-  <label>📸 Photo Proof</label>
-
-  <input
-    type="file"
-    id="morningPhoto"
-    accept="image/*"
-    capture="user"
-  >
-
-  <img id="morningPreview" class="photo-preview">
-
-  <div class="location">
-    📍 Location:
-    <span id="morningLocation">
-      Location not captured
-    </span>
-  </div>
-
-  <button onclick="getLocation('morning')">
-    📍 Capture Location
-  </button>
-
-  <button id="morningBtn" onclick="morningAttendance()">
-    🌅 Mark Morning Attendance
-  </button>
-
-</div>
+        <div class="timebox">
+            <div id="currentDate">Loading date...</div>
+            <div id="currentTime">Loading time...</div>
+        </div>
+    </div>
 
 
-<!-- AFTERNOON ATTENDANCE -->
+    <!-- MORNING ATTENDANCE -->
+    <div class="card">
+        <h2>🌅 Morning Attendance</h2>
 
-<div class="card">
+        <div class="info">
+            Morning attendance opens at <b>8:00 AM</b>.<br>
+            Photo and current location are required.
+        </div>
 
-  <div class="section-title">
-    ☀️ Complete Attendance
-  </div>
+        <div class="upload">
+            📸 <b>Take Photo</b>
+            <input type="file" id="morningPhoto" accept="image/*" capture="user">
+        </div>
 
-  <p style="font-size:13px;color:#64748b;margin-bottom:10px;">
-    Complete attendance opens from <b>12:00 PM to 2:00 PM</b>.
-  </p>
+        <div class="location">
+            📍 Location:
+            <b id="morningLocation">Not captured</b>
+        </div>
 
-  <label>📸 Afternoon Photo Proof</label>
+        <button class="primary" onclick="getMorningLocation()">
+            📍 Get Current Location
+        </button>
 
-  <input
-    type="file"
-    id="afternoonPhoto"
-    accept="image/*"
-    capture="user"
-  >
+        <button class="primary" id="morningBtn" onclick="markMorningAttendance()">
+            ✅ Mark Morning Attendance
+        </button>
 
-  <img id="afternoonPreview" class="photo-preview">
-
-  <div class="location">
-    📍 Location:
-    <span id="afternoonLocation">
-      Location not captured
-    </span>
-  </div>
-
-  <button onclick="getLocation('afternoon')">
-    📍 Capture Location
-  </button>
-
-  <button id="afternoonBtn" onclick="completeAttendance()">
-    ☀️ Complete Attendance
-  </button>
-
-</div>
+        <div id="morningStatus" class="status"></div>
+    </div>
 
 
-<!-- RESULT -->
+    <!-- COMPLETE ATTENDANCE -->
+    <div class="card">
+        <h2>🌞 Complete Attendance</h2>
 
-<div class="card">
+        <div class="info">
+            Complete attendance is available only between
+            <b>12:00 PM and 2:00 PM</b>.<br>
+            Morning attendance must be completed first.
+        </div>
 
-  <div class="section-title">
-    📋 Today's Attendance
-  </div>
+        <div class="upload">
+            📸 <b>Take Photo</b>
+            <input type="file" id="afternoonPhoto" accept="image/*" capture="user">
+        </div>
 
-  <div id="attendanceResult">
-    No attendance submitted today.
-  </div>
+        <div class="location">
+            📍 Location:
+            <b id="afternoonLocation">Not captured</b>
+        </div>
 
-  <button class="whatsapp" onclick="sendWhatsApp()">
-    💬 Send Attendance to Sachin Sir
-  </button>
+        <button class="success" onclick="getAfternoonLocation()">
+            📍 Get Current Location
+        </button>
+
+        <button class="success" id="afternoonBtn" onclick="markAfternoonAttendance()">
+            🏁 Complete Attendance
+        </button>
+
+        <div id="afternoonStatus" class="status"></div>
+    </div>
+
+
+    <!-- TODAY'S ATTENDANCE -->
+    <div class="card">
+        <h2>📋 Today's Attendance</h2>
+
+        <div id="todayAttendance">
+            No attendance recorded today.
+        </div>
+
+        <button class="whatsapp" onclick="sendWhatsApp()">
+            📱 Send Attendance to Sachin Sir
+        </button>
+    </div>
 
 </div>
 
 
 <div class="footer">
-  ANM Smart Attendance System © 2026
-</div>
-
+    Govt. ANMTC Sawai Madhopur<br>
+    ANM Attendance Management System
 </div>
 
 
@@ -343,563 +393,550 @@ button:disabled{
 
 const SIR_NUMBER = "918104058114";
 
-let morningLocation = null;
-let afternoonLocation = null;
-
-let morningRecord = null;
-let afternoonRecord = null;
+let morningCoords = null;
+let afternoonCoords = null;
 
 
-/* CLOCK */
+/* CURRENT DATE & TIME */
 
-function updateClock(){
+function updateDateTime(){
 
-  const now = new Date();
+    const now = new Date();
 
-  document.getElementById("clock").textContent =
-    now.toLocaleTimeString("en-IN");
-
-  document.getElementById("date").textContent =
-    now.toLocaleDateString("en-IN",{
-      weekday:"long",
-      year:"numeric",
-      month:"long",
-      day:"numeric"
+    const date = now.toLocaleDateString("en-IN",{
+        weekday:"long",
+        day:"2-digit",
+        month:"long",
+        year:"numeric"
     });
 
-  updateButtons();
+    const time = now.toLocaleTimeString("en-IN",{
+        hour:"2-digit",
+        minute:"2-digit",
+        second:"2-digit",
+        hour12:true
+    });
+
+    document.getElementById("currentDate").innerText = date;
+    document.getElementById("currentTime").innerText = time;
+
+    updateButtons();
 }
 
-setInterval(updateClock,1000);
-updateClock();
+setInterval(updateDateTime,1000);
+updateDateTime();
 
 
-/* TIME CHECK */
+/* DATE KEY */
 
-function getMinutes(){
+function todayKey(){
+    const now = new Date();
 
-  const now = new Date();
-
-  return now.getHours()*60 + now.getMinutes();
-
+    return now.getFullYear() + "-" +
+        String(now.getMonth()+1).padStart(2,"0") + "-" +
+        String(now.getDate()).padStart(2,"0");
 }
 
+
+/* SAVE STUDENT DETAILS */
+
+function getStudentDetails(){
+
+    return {
+        name: document.getElementById("anmName").value.trim(),
+        roll: document.getElementById("rollNumber").value.trim(),
+        facility: document.getElementById("facility").value
+    };
+}
+
+
+/* TIME CONTROL */
 
 function updateButtons(){
 
-  const minutes = getMinutes();
+    const now = new Date();
 
-  const morningBtn =
-    document.getElementById("morningBtn");
+    const hour = now.getHours();
+    const minute = now.getMinutes();
 
-  const afternoonBtn =
-    document.getElementById("afternoonBtn");
+    const totalMinutes = hour * 60 + minute;
 
+    const morningButton = document.getElementById("morningBtn");
+    const afternoonButton = document.getElementById("afternoonBtn");
 
-  /* Morning opens from 8 AM */
+    const morning = localStorage.getItem("anmMorning");
+    const afternoon = localStorage.getItem("anmAfternoon");
 
-  if(minutes >= 480){
+    const today = todayKey();
 
-    morningBtn.disabled = false;
+    let morningData = null;
+    let afternoonData = null;
 
-  }else{
+    try{
+        morningData = morning ? JSON.parse(morning) : null;
+        afternoonData = afternoon ? JSON.parse(afternoon) : null;
+    }catch(e){}
 
-    morningBtn.disabled = true;
+    /* Morning available from 8 AM */
 
-  }
+    if(morningData && morningData.date === today){
 
+        morningButton.disabled = true;
+        morningButton.innerText = "✅ Morning Attendance Completed";
 
-  /* Afternoon 12 PM - 2 PM */
+    }else if(totalMinutes >= 480){
 
-  if(minutes >= 720 && minutes <= 840){
+        morningButton.disabled = false;
+        morningButton.innerText = "✅ Mark Morning Attendance";
 
-    afternoonBtn.disabled = false;
+    }else{
 
-  }else{
-
-    afternoonBtn.disabled = true;
-
-  }
-
-}
-
-
-/* LOCATION */
-
-function getLocation(type){
-
-  if(!navigator.geolocation){
-
-    alert("Location is not supported by this browser.");
-    return;
-
-  }
-
-  const text =
-    type === "morning"
-    ? "morningLocation"
-    : "afternoonLocation";
-
-
-  document.getElementById(text).textContent =
-    "Capturing location...";
-
-
-  navigator.geolocation.getCurrentPosition(
-
-    function(position){
-
-      const lat =
-        position.coords.latitude.toFixed(6);
-
-      const lon =
-        position.coords.longitude.toFixed(6);
-
-
-      const locationData = {
-        latitude:lat,
-        longitude:lon,
-        accuracy:position.coords.accuracy
-      };
-
-
-      if(type === "morning"){
-
-        morningLocation = locationData;
-
-      }else{
-
-        afternoonLocation = locationData;
-
-      }
-
-
-      document.getElementById(text).textContent =
-        lat + ", " + lon;
-
-    },
-
-    function(){
-
-      document.getElementById(text).textContent =
-        "Location permission denied.";
-
-      alert(
-        "Please allow location permission and try again."
-      );
-
-    },
-
-    {
-      enableHighAccuracy:true,
-      timeout:15000
+        morningButton.disabled = true;
+        morningButton.innerText = "🔒 Opens at 8:00 AM";
     }
 
-  );
 
+    /* Afternoon 12 PM - 2 PM */
+
+    if(afternoonData && afternoonData.date === today){
+
+        afternoonButton.disabled = true;
+        afternoonButton.innerText = "✅ Complete Attendance Done";
+
+    }else if(totalMinutes >= 720 && totalMinutes <= 840){
+
+        if(morningData && morningData.date === today){
+
+            afternoonButton.disabled = false;
+            afternoonButton.innerText = "🏁 Complete Attendance";
+
+        }else{
+
+            afternoonButton.disabled = true;
+            afternoonButton.innerText = "🔒 Morning Attendance Required";
+        }
+
+    }else if(totalMinutes < 720){
+
+        afternoonButton.disabled = true;
+        afternoonButton.innerText = "🔒 Opens at 12:00 PM";
+
+    }else{
+
+        afternoonButton.disabled = true;
+        afternoonButton.innerText = "⛔ Attendance Closed";
+    }
+
+    displayTodayAttendance();
 }
 
 
-/* PHOTO PREVIEW */
+/* GET MORNING LOCATION */
 
-document.getElementById("morningPhoto")
-.addEventListener("change",function(){
+function getMorningLocation(){
 
-  previewPhoto(this,"morningPreview");
+    if(!navigator.geolocation){
 
-});
+        showStatus(
+            "morningStatus",
+            "error",
+            "Location is not supported by this device."
+        );
+
+        return;
+    }
+
+    document.getElementById("morningLocation").innerText =
+        "Getting location...";
+
+    navigator.geolocation.getCurrentPosition(
+
+        function(position){
+
+            morningCoords = {
+                latitude:position.coords.latitude,
+                longitude:position.coords.longitude
+            };
+
+            document.getElementById("morningLocation").innerText =
+                morningCoords.latitude.toFixed(6) +
+                ", " +
+                morningCoords.longitude.toFixed(6);
+        },
+
+        function(){
+
+            showStatus(
+                "morningStatus",
+                "error",
+                "Location permission denied. Please allow location permission."
+            );
+
+        },
+
+        {
+            enableHighAccuracy:true,
+            timeout:15000
+        }
+    );
+}
 
 
-document.getElementById("afternoonPhoto")
-.addEventListener("change",function(){
+/* GET AFTERNOON LOCATION */
 
-  previewPhoto(this,"afternoonPreview");
+function getAfternoonLocation(){
 
-});
+    if(!navigator.geolocation){
 
+        showStatus(
+            "afternoonStatus",
+            "error",
+            "Location is not supported by this device."
+        );
 
-function previewPhoto(input,id){
+        return;
+    }
 
-  if(input.files && input.files[0]){
+    document.getElementById("afternoonLocation").innerText =
+        "Getting location...";
 
-    const reader = new FileReader();
+    navigator.geolocation.getCurrentPosition(
 
-    reader.onload = function(e){
+        function(position){
 
-      const img =
-        document.getElementById(id);
+            afternoonCoords = {
+                latitude:position.coords.latitude,
+                longitude:position.coords.longitude
+            };
 
-      img.src = e.target.result;
-      img.style.display = "block";
+            document.getElementById("afternoonLocation").innerText =
+                afternoonCoords.latitude.toFixed(6) +
+                ", " +
+                afternoonCoords.longitude.toFixed(6);
+        },
 
-    };
+        function(){
 
-    reader.readAsDataURL(input.files[0]);
+            showStatus(
+                "afternoonStatus",
+                "error",
+                "Location permission denied. Please allow location permission."
+            );
 
-  }
+        },
 
+        {
+            enableHighAccuracy:true,
+            timeout:15000
+        }
+    );
 }
 
 
 /* VALIDATE DETAILS */
 
-function validateDetails(){
+function validateStudent(){
 
-  const name =
-    document.getElementById("name").value.trim();
+    const student = getStudentDetails();
 
-  const roll =
-    document.getElementById("roll").value.trim();
+    if(!student.name){
 
-  const facility =
-    document.getElementById("facility").value;
+        alert("Please enter ANM Name.");
+        return false;
+    }
 
+    if(!student.roll){
 
-  if(!name){
+        alert("Please enter Roll Number.");
+        return false;
+    }
 
-    alert("Please enter ANM Name.");
-    return false;
+    if(!student.facility){
 
-  }
+        alert("Please select Hospital / Facility.");
+        return false;
+    }
 
-  if(!roll){
-
-    alert("Please enter Roll Number.");
-    return false;
-
-  }
-
-  if(!facility){
-
-    alert("Please select Hospital / Facility.");
-    return false;
-
-  }
-
-  return true;
-
+    return true;
 }
 
 
 /* MORNING ATTENDANCE */
 
-function morningAttendance(){
+function markMorningAttendance(){
 
-  if(!validateDetails()) return;
+    if(!validateStudent()) return;
 
+    const now = new Date();
 
-  const minutes = getMinutes();
+    const totalMinutes =
+        now.getHours() * 60 + now.getMinutes();
 
-  if(minutes < 480){
+    if(totalMinutes < 480){
 
-    alert("Morning attendance opens at 8:00 AM.");
-    return;
+        alert("Morning attendance opens at 8:00 AM.");
+        return;
+    }
 
-  }
+    const photo =
+        document.getElementById("morningPhoto").files[0];
 
+    if(!photo){
 
-  if(morningRecord){
+        alert("Please take/select your photo first.");
+        return;
+    }
 
-    alert("Morning attendance already submitted today.");
-    return;
+    if(!morningCoords){
 
-  }
+        alert("Please capture your current location first.");
+        return;
+    }
 
+    const student = getStudentDetails();
 
-  if(!morningLocation){
+    const record = {
 
-    alert("Please capture your location first.");
-    return;
+        type:"Morning Attendance",
 
-  }
+        name:student.name,
 
+        roll:student.roll,
 
-  const photo =
-    document.getElementById("morningPhoto").files[0];
+        facility:student.facility,
 
+        date:todayKey(),
 
-  if(!photo){
+        dateTime:now.toLocaleString("en-IN"),
 
-    alert("Please take/upload your morning photo.");
-    return;
+        latitude:morningCoords.latitude,
 
-  }
+        longitude:morningCoords.longitude,
 
+        photoName:photo.name
+    };
 
-  const now = new Date();
+    localStorage.setItem(
+        "anmMorning",
+        JSON.stringify(record)
+    );
 
+    showStatus(
+        "morningStatus",
+        "success",
+        "✅ Morning attendance successfully recorded on this device."
+    );
 
-  morningRecord = {
-
-    name:
-      document.getElementById("name").value.trim(),
-
-    roll:
-      document.getElementById("roll").value.trim(),
-
-    facility:
-      document.getElementById("facility").value,
-
-    date:
-      now.toLocaleDateString("en-IN"),
-
-    time:
-      now.toLocaleTimeString("en-IN"),
-
-    location:
-      morningLocation.latitude +
-      ", " +
-      morningLocation.longitude
-
-  };
-
-
-  localStorage.setItem(
-    "anmMorning",
-    JSON.stringify(morningRecord)
-  );
-
-
-  showStatus(
-    "morningStatus",
-    "✓ Morning attendance submitted successfully.",
-    "success"
-  );
-
-
-  updateResult();
-
+    updateButtons();
 }
 
 
-/* COMPLETE ATTENDANCE */
+/* AFTERNOON ATTENDANCE */
 
-function completeAttendance(){
+function markAfternoonAttendance(){
 
-  if(!validateDetails()) return;
+    if(!validateStudent()) return;
 
+    const now = new Date();
 
-  const minutes = getMinutes();
+    const totalMinutes =
+        now.getHours() * 60 + now.getMinutes();
 
+    if(totalMinutes < 720 || totalMinutes > 840){
 
-  if(minutes < 720 || minutes > 840){
+        alert("Complete Attendance is available only from 12:00 PM to 2:00 PM.");
+        return;
+    }
 
-    alert(
-      "Complete Attendance is available only from 12:00 PM to 2:00 PM."
+    const morning =
+        localStorage.getItem("anmMorning");
+
+    if(!morning){
+
+        alert("First complete Morning Attendance.");
+        return;
+    }
+
+    const morningData = JSON.parse(morning);
+
+    if(morningData.date !== todayKey()){
+
+        alert("Today's Morning Attendance is required first.");
+        return;
+    }
+
+    const photo =
+        document.getElementById("afternoonPhoto").files[0];
+
+    if(!photo){
+
+        alert("Please take/select your photo first.");
+        return;
+    }
+
+    if(!afternoonCoords){
+
+        alert("Please capture your current location first.");
+        return;
+    }
+
+    const student = getStudentDetails();
+
+    const record = {
+
+        type:"Complete Attendance",
+
+        name:student.name,
+
+        roll:student.roll,
+
+        facility:student.facility,
+
+        date:todayKey(),
+
+        dateTime:now.toLocaleString("en-IN"),
+
+        latitude:afternoonCoords.latitude,
+
+        longitude:afternoonCoords.longitude,
+
+        photoName:photo.name
+    };
+
+    localStorage.setItem(
+        "anmAfternoon",
+        JSON.stringify(record)
     );
 
-    return;
-
-  }
-
-
-  if(!morningRecord){
-
-    alert(
-      "First complete Morning Attendance."
+    showStatus(
+        "afternoonStatus",
+        "success",
+        "✅ Complete attendance successfully recorded on this device."
     );
 
-    return;
-
-  }
-
-
-  if(afternoonRecord){
-
-    alert(
-      "Complete Attendance already submitted today."
-    );
-
-    return;
-
-  }
-
-
-  if(!afternoonLocation){
-
-    alert(
-      "Please capture afternoon location first."
-    );
-
-    return;
-
-  }
-
-
-  const photo =
-    document.getElementById("afternoonPhoto").files[0];
-
-
-  if(!photo){
-
-    alert(
-      "Please take/upload afternoon photo."
-    );
-
-    return;
-
-  }
-
-
-  const now = new Date();
-
-
-  afternoonRecord = {
-
-    time:
-      now.toLocaleTimeString("en-IN"),
-
-    location:
-      afternoonLocation.latitude +
-      ", " +
-      afternoonLocation.longitude
-
-  };
-
-
-  localStorage.setItem(
-    "anmAfternoon",
-    JSON.stringify(afternoonRecord)
-  );
-
-
-  showStatus(
-    "afternoonStatus",
-    "✓ Complete Attendance submitted successfully!",
-    "success"
-  );
-
-
-  updateResult();
-
+    updateButtons();
 }
 
 
-/* STATUS */
+/* STATUS MESSAGE */
 
-function showStatus(id,message,type){
+function showStatus(id,type,message){
 
-  const box =
-    document.getElementById(id);
+    const box = document.getElementById(id);
 
-  box.className =
-    "status " + type;
+    box.style.display = "block";
 
-  box.textContent =
-    message;
+    box.innerText = message;
 
-  box.style.display =
-    "block";
+    box.className = "status";
 
+    if(type === "success")
+        box.classList.add("success-status");
+
+    if(type === "error")
+        box.classList.add("error-status");
+
+    if(type === "warning")
+        box.classList.add("warning-status");
 }
 
 
-/* LOAD SAVED DATA */
+/* DISPLAY TODAY'S ATTENDANCE */
 
-function loadSaved(){
+function displayTodayAttendance(){
 
-  const m =
-    localStorage.getItem("anmMorning");
+    const box =
+        document.getElementById("todayAttendance");
 
-  const a =
-    localStorage.getItem("anmAfternoon");
+    const today = todayKey();
 
+    const morning =
+        localStorage.getItem("anmMorning");
 
-  if(m){
+    const afternoon =
+        localStorage.getItem("anmAfternoon");
 
-    morningRecord =
-      JSON.parse(m);
+    let html = "";
 
-  }
+    if(morning){
 
+        try{
 
-  if(a){
+            const data = JSON.parse(morning);
 
-    afternoonRecord =
-      JSON.parse(a);
+            if(data.date === today){
 
-  }
+                html += `
+                <div class="attendance-row">
 
+                    <b>🌅 Morning Attendance</b><br>
 
-  updateResult();
+                    ${data.name}<br>
 
-}
+                    Roll No: ${data.roll}<br>
 
+                    Facility: ${data.facility}<br>
 
-function updateResult(){
+                    <span class="badge badge-green">
+                        Completed
+                    </span><br>
 
-  const box =
-    document.getElementById("attendanceResult");
+                    <span class="small">
+                        ${data.dateTime}
+                    </span>
 
+                </div>
+                `;
 
-  if(!morningRecord){
+            }
 
-    box.innerHTML =
-      "❌ Morning attendance not submitted.";
-
-    return;
-
-  }
-
-
-  let html = `
-
-  <div class="attendance">
-
-    <b>👩‍⚕️ ANM:</b>
-    ${morningRecord.name}<br>
-
-    <b>🔢 Roll No:</b>
-    ${morningRecord.roll}<br>
-
-    <b>🏥 Facility:</b>
-    ${morningRecord.facility}<br>
-
-    <b>🌅 Morning:</b>
-    ✓ ${morningRecord.time}<br>
-
-    <b>📍 Location:</b>
-    ${morningRecord.location}<br>
-
-  `;
+        }catch(e){}
+    }
 
 
-  if(afternoonRecord){
+    if(afternoon){
 
-    html += `
+        try{
 
-      <b>☀️ Complete:</b>
-      ✓ ${afternoonRecord.time}<br>
+            const data = JSON.parse(afternoon);
 
-      <b>📍 Afternoon Location:</b>
-      ${afternoonRecord.location}<br>
+            if(data.date === today){
 
-      <br>
+                html += `
+                <div class="attendance-row">
 
-      <strong>🟢 COMPLETE ATTENDANCE</strong>
+                    <b>🌞 Complete Attendance</b><br>
 
-    `;
+                    ${data.name}<br>
 
-  }else{
+                    Roll No: ${data.roll}<br>
 
-    html += `
+                    Facility: ${data.facility}<br>
 
-      <br>
-      🟡 Morning complete.
-      <br>
-      Complete Attendance pending.
+                    <span class="badge badge-green">
+                        Completed
+                    </span><br>
 
-    `;
+                    <span class="small">
+                        ${data.dateTime}
+                    </span>
 
-  }
+                </div>
+                `;
+
+            }
+
+        }catch(e){}
+    }
 
 
-  html += "</div>";
+    if(!html){
 
+        html = "No attendance recorded today.";
 
-  box.innerHTML =
-    html;
+    }
 
+    box.innerHTML = html;
 }
 
 
@@ -907,76 +944,102 @@ function updateResult(){
 
 function sendWhatsApp(){
 
-  if(!morningRecord){
+    const student = getStudentDetails();
 
-    alert(
-      "Please submit attendance first."
-    );
+    if(!student.name){
 
-    return;
+        alert("Please enter ANM Name first.");
+        return;
+    }
 
-  }
+    if(!student.roll){
 
+        alert("Please enter Roll Number first.");
+        return;
+    }
 
-  let message =
-    "ANM ATTENDANCE%0A%0A" +
+    if(!student.facility){
 
-    "Name: " +
-    encodeURIComponent(morningRecord.name) +
-
-    "%0ARoll No: " +
-    encodeURIComponent(morningRecord.roll) +
-
-    "%0AFacility: " +
-    encodeURIComponent(morningRecord.facility) +
-
-    "%0ADate: " +
-    encodeURIComponent(morningRecord.date) +
-
-    "%0AMorning Time: " +
-    encodeURIComponent(morningRecord.time) +
-
-    "%0AMorning Location: " +
-    encodeURIComponent(morningRecord.location);
+        alert("Please select Hospital / Facility first.");
+        return;
+    }
 
 
-  if(afternoonRecord){
+    const morning =
+        localStorage.getItem("anmMorning");
+
+    const afternoon =
+        localStorage.getItem("anmAfternoon");
+
+    let message =
+        "🏥 Govt. ANMTC Sawai Madhopur%0A" +
+        "📋 ANM Attendance Report%0A%0A" +
+
+        "👩 ANM Name: " + student.name + "%0A" +
+        "🔢 Roll Number: " + student.roll + "%0A" +
+        "🏥 Facility: " + student.facility + "%0A" +
+        "📅 Date: " + todayKey() + "%0A%0A";
+
+
+    if(morning){
+
+        try{
+
+            const data = JSON.parse(morning);
+
+            if(data.date === todayKey()){
+
+                message +=
+                    "🌅 Morning Attendance: ✅ Completed%0A" +
+                    "🕐 Time: " + data.dateTime + "%0A" +
+                    "📍 Location: " +
+                    data.latitude + ", " +
+                    data.longitude + "%0A%0A";
+            }
+
+        }catch(e){}
+    }
+
+
+    if(afternoon){
+
+        try{
+
+            const data = JSON.parse(afternoon);
+
+            if(data.date === todayKey()){
+
+                message +=
+                    "🌞 Complete Attendance: ✅ Completed%0A" +
+                    "🕐 Time: " + data.dateTime + "%0A" +
+                    "📍 Location: " +
+                    data.latitude + ", " +
+                    data.longitude + "%0A%0A";
+            }
+
+        }catch(e){}
+    }
+
 
     message +=
-
-      "%0AComplete Time: " +
-      encodeURIComponent(afternoonRecord.time) +
-
-      "%0AAfternoon Location: " +
-      encodeURIComponent(afternoonRecord.location) +
-
-      "%0A%0ASTATUS: COMPLETE ATTENDANCE";
-
-  }else{
-
-    message +=
-      "%0A%0ASTATUS: MORNING ONLY";
-
-  }
+        "Sent from ANM Attendance System.";
 
 
-  const url =
-    "https://wa.me/" +
-    SIR_NUMBER +
-    "?text=" +
-    message;
+    const whatsappURL =
+        "https://wa.me/" +
+        SIR_NUMBER +
+        "?text=" +
+        message;
 
-
-  window.open(url,"_blank");
-
+    window.open(whatsappURL,"_blank");
 }
 
 
-/* START */
+/* INITIAL DISPLAY */
 
-loadSaved();
+displayTodayAttendance();
 
 </script>
 
 </body>
-</html> 
+</html>
