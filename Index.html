@@ -1,250 +1,982 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Smart Attendance System</title>
+<title>ANM Attendance</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-    }
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:Arial,sans-serif;
+}
 
-    body {
-      min-height: 100vh;
-      background: linear-gradient(135deg, #eef2ff, #e0f2fe);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
+body{
+  min-height:100vh;
+  background:linear-gradient(135deg,#e0f2fe,#eef2ff);
+  padding:18px;
+}
 
-    .container {
-      width: 100%;
-      max-width: 480px;
-      background: white;
-      border-radius: 25px;
-      padding: 30px 24px;
-      box-shadow: 0 15px 45px rgba(0,0,0,0.12);
-      text-align: center;
-    }
+.container{
+  max-width:500px;
+  margin:auto;
+}
 
-    .logo {
-      width: 75px;
-      height: 75px;
-      margin: auto;
-      border-radius: 22px;
-      background: linear-gradient(135deg, #2563eb, #06b6d4);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 35px;
-      box-shadow: 0 10px 25px rgba(37,99,235,0.25);
-    }
+.header{
+  background:linear-gradient(135deg,#1d4ed8,#0891b2);
+  color:white;
+  padding:28px 20px;
+  border-radius:25px;
+  text-align:center;
+  box-shadow:0 12px 30px rgba(0,0,0,.15);
+  margin-bottom:18px;
+}
 
-    h1 {
-      margin-top: 18px;
-      color: #172554;
-      font-size: 28px;
-    }
+.logo{
+  font-size:45px;
+}
 
-    .subtitle {
-      color: #64748b;
-      margin-top: 8px;
-      margin-bottom: 28px;
-      font-size: 14px;
-    }
+.header h1{
+  margin-top:8px;
+  font-size:27px;
+}
 
-    .card {
-      background: #f8fafc;
-      border-radius: 18px;
-      padding: 20px;
-      text-align: left;
-      margin-bottom: 15px;
-      border: 1px solid #e2e8f0;
-    }
+.header p{
+  margin-top:7px;
+  font-size:13px;
+  opacity:.9;
+}
 
-    label {
-      display: block;
-      font-size: 13px;
-      font-weight: bold;
-      color: #334155;
-      margin-bottom: 7px;
-    }
+.card{
+  background:white;
+  border-radius:22px;
+  padding:20px;
+  margin-bottom:16px;
+  box-shadow:0 8px 25px rgba(0,0,0,.08);
+}
 
-    input, select {
-      width: 100%;
-      padding: 14px;
-      border: 1px solid #cbd5e1;
-      border-radius: 12px;
-      outline: none;
-      background: white;
-      font-size: 15px;
-    }
+.section-title{
+  font-size:19px;
+  color:#172554;
+  font-weight:bold;
+  margin-bottom:15px;
+}
 
-    input:focus, select:focus {
-      border-color: #2563eb;
-    }
+label{
+  display:block;
+  font-size:13px;
+  font-weight:bold;
+  color:#334155;
+  margin:13px 0 7px;
+}
 
-    button {
-      width: 100%;
-      border: none;
-      padding: 15px;
-      border-radius: 13px;
-      background: linear-gradient(135deg, #2563eb, #0891b2);
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 8px;
-      box-shadow: 0 8px 20px rgba(37,99,235,0.20);
-    }
+input,select{
+  width:100%;
+  padding:14px;
+  border:1px solid #cbd5e1;
+  border-radius:12px;
+  font-size:15px;
+  outline:none;
+}
 
-    button:active {
-      transform: scale(0.98);
-    }
+input:focus,select:focus{
+  border-color:#2563eb;
+}
 
-    .qr {
-      font-size: 70px;
-      margin: 10px 0;
-    }
+button{
+  width:100%;
+  border:0;
+  padding:15px;
+  border-radius:13px;
+  margin-top:12px;
+  font-size:15px;
+  font-weight:bold;
+  color:white;
+  background:linear-gradient(135deg,#2563eb,#0891b2);
+  cursor:pointer;
+}
 
-    .status {
-      display: none;
-      padding: 13px;
-      margin-top: 15px;
-      border-radius: 12px;
-      background: #dcfce7;
-      color: #166534;
-      font-weight: bold;
-      font-size: 14px;
-    }
+button:disabled{
+  background:#94a3b8;
+  cursor:not-allowed;
+}
 
-    .footer {
-      margin-top: 22px;
-      color: #94a3b8;
-      font-size: 12px;
-    }
-  </style>
+.location{
+  background:#f1f5f9;
+  padding:12px;
+  border-radius:12px;
+  margin-top:10px;
+  font-size:13px;
+  color:#475569;
+}
+
+.status{
+  display:none;
+  padding:13px;
+  border-radius:12px;
+  margin-top:12px;
+  font-weight:bold;
+  text-align:center;
+}
+
+.success{
+  background:#dcfce7;
+  color:#166534;
+}
+
+.warning{
+  background:#fef3c7;
+  color:#92400e;
+}
+
+.error{
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+.timebox{
+  text-align:center;
+  background:#f8fafc;
+  border-radius:15px;
+  padding:15px;
+  margin-bottom:15px;
+}
+
+#clock{
+  font-size:25px;
+  font-weight:bold;
+  color:#1d4ed8;
+}
+
+#date{
+  color:#64748b;
+  margin-top:5px;
+  font-size:13px;
+}
+
+.photo-preview{
+  width:100%;
+  max-height:250px;
+  object-fit:cover;
+  border-radius:15px;
+  display:none;
+  margin-top:12px;
+}
+
+.attendance{
+  border-left:5px solid #2563eb;
+  background:#f8fafc;
+  padding:15px;
+  border-radius:12px;
+  margin-top:10px;
+  font-size:13px;
+  line-height:1.7;
+}
+
+.whatsapp{
+  background:#16a34a;
+}
+
+.footer{
+  text-align:center;
+  color:#64748b;
+  font-size:12px;
+  padding:10px;
+}
+</style>
 </head>
 
 <body>
 
-  <div class="container">
+<div class="container">
 
-    <div class="logo">🏥</div>
+<div class="header">
+  <div class="logo">👩‍⚕️</div>
+  <h1>ANM Attendance</h1>
+  <p>Smart Attendance & Verification System</p>
+</div>
 
-    <h1>Smart Attendance</h1>
+<div class="card">
 
-    <p class="subtitle">
-      Hospital-wise QR Attendance System
-    </p>
-
-    <div class="card">
-
-      <label>Hospital / Facility</label>
-
-      <select id="hospital">
-        <option value="">Select Hospital</option>
-        <option>ANMTC Sawai Madhopur</option>
-        <option>CMHO Sawai Madhopur</option>
-        <option>District Hospital</option>
-        <option>CHC</option>
-        <option>PHC</option>
-      </select>
-
-    </div>
-
-    <div class="card">
-
-      <label>Employee / Student Name</label>
-
-      <input
-        type="text"
-        id="name"
-        placeholder="Enter your name"
-      >
-
-      <br><br>
-
-      <label>Employee ID / Roll Number</label>
-
-      <input
-        type="text"
-        id="id"
-        placeholder="Enter ID / Roll No."
-      >
-
-      <button onclick="markAttendance()">
-        ✓ Mark Attendance
-      </button>
-
-      <div class="status" id="status">
-        Attendance submitted successfully!
-      </div>
-
-    </div>
-
-    <div class="card">
-
-      <div class="qr">▦</div>
-
-      <h3 style="text-align:center;color:#172554;">
-        Scan Hospital QR
-      </h3>
-
-      <p style="text-align:center;color:#64748b;font-size:13px;margin-top:7px;">
-        QR scanning & secure attendance will be connected with Firebase.
-      </p>
-
-    </div>
-
-    <div class="footer">
-      © 2026 Smart Attendance System
-    </div>
-
+  <div class="timebox">
+    <div id="clock">00:00:00</div>
+    <div id="date">Loading...</div>
   </div>
 
-  <script>
+  <div id="morningStatus" class="status"></div>
+  <div id="afternoonStatus" class="status"></div>
 
-    function markAttendance() {
+  <div class="section-title">👩‍⚕️ ANM Details</div>
 
-      const hospital = document.getElementById("hospital").value;
-      const name = document.getElementById("name").value.trim();
-      const id = document.getElementById("id").value.trim();
-      const status = document.getElementById("status");
+  <label>ANM Name</label>
+  <input type="text" id="name" placeholder="Enter ANM name">
 
-      if (!hospital) {
-        alert("Please select your hospital.");
-        return;
+  <label>Roll Number</label>
+  <input type="text" id="roll" placeholder="Enter roll number">
+
+  <label>Hospital / Facility</label>
+  <select id="facility">
+    <option value="">Select Facility</option>
+    <option>ANMTC Sawai Madhopur</option>
+    <option>CMHO Office Sawai Madhopur</option>
+    <option>District Hospital</option>
+    <option>CHC</option>
+    <option>PHC</option>
+    <option>Other</option>
+  </select>
+
+</div>
+
+
+<!-- MORNING ATTENDANCE -->
+
+<div class="card">
+
+  <div class="section-title">
+    🌅 Morning Attendance
+  </div>
+
+  <p style="font-size:13px;color:#64748b;margin-bottom:10px;">
+    Morning attendance: 8:00 AM onwards
+  </p>
+
+  <label>📸 Photo Proof</label>
+
+  <input
+    type="file"
+    id="morningPhoto"
+    accept="image/*"
+    capture="user"
+  >
+
+  <img id="morningPreview" class="photo-preview">
+
+  <div class="location">
+    📍 Location:
+    <span id="morningLocation">
+      Location not captured
+    </span>
+  </div>
+
+  <button onclick="getLocation('morning')">
+    📍 Capture Location
+  </button>
+
+  <button id="morningBtn" onclick="morningAttendance()">
+    🌅 Mark Morning Attendance
+  </button>
+
+</div>
+
+
+<!-- AFTERNOON ATTENDANCE -->
+
+<div class="card">
+
+  <div class="section-title">
+    ☀️ Complete Attendance
+  </div>
+
+  <p style="font-size:13px;color:#64748b;margin-bottom:10px;">
+    Complete attendance opens from <b>12:00 PM to 2:00 PM</b>.
+  </p>
+
+  <label>📸 Afternoon Photo Proof</label>
+
+  <input
+    type="file"
+    id="afternoonPhoto"
+    accept="image/*"
+    capture="user"
+  >
+
+  <img id="afternoonPreview" class="photo-preview">
+
+  <div class="location">
+    📍 Location:
+    <span id="afternoonLocation">
+      Location not captured
+    </span>
+  </div>
+
+  <button onclick="getLocation('afternoon')">
+    📍 Capture Location
+  </button>
+
+  <button id="afternoonBtn" onclick="completeAttendance()">
+    ☀️ Complete Attendance
+  </button>
+
+</div>
+
+
+<!-- RESULT -->
+
+<div class="card">
+
+  <div class="section-title">
+    📋 Today's Attendance
+  </div>
+
+  <div id="attendanceResult">
+    No attendance submitted today.
+  </div>
+
+  <button class="whatsapp" onclick="sendWhatsApp()">
+    💬 Send Attendance to Sachin Sir
+  </button>
+
+</div>
+
+
+<div class="footer">
+  ANM Smart Attendance System © 2026
+</div>
+
+</div>
+
+
+<script>
+
+const SIR_NUMBER = "918104058114";
+
+let morningLocation = null;
+let afternoonLocation = null;
+
+let morningRecord = null;
+let afternoonRecord = null;
+
+
+/* CLOCK */
+
+function updateClock(){
+
+  const now = new Date();
+
+  document.getElementById("clock").textContent =
+    now.toLocaleTimeString("en-IN");
+
+  document.getElementById("date").textContent =
+    now.toLocaleDateString("en-IN",{
+      weekday:"long",
+      year:"numeric",
+      month:"long",
+      day:"numeric"
+    });
+
+  updateButtons();
+}
+
+setInterval(updateClock,1000);
+updateClock();
+
+
+/* TIME CHECK */
+
+function getMinutes(){
+
+  const now = new Date();
+
+  return now.getHours()*60 + now.getMinutes();
+
+}
+
+
+function updateButtons(){
+
+  const minutes = getMinutes();
+
+  const morningBtn =
+    document.getElementById("morningBtn");
+
+  const afternoonBtn =
+    document.getElementById("afternoonBtn");
+
+
+  /* Morning opens from 8 AM */
+
+  if(minutes >= 480){
+
+    morningBtn.disabled = false;
+
+  }else{
+
+    morningBtn.disabled = true;
+
+  }
+
+
+  /* Afternoon 12 PM - 2 PM */
+
+  if(minutes >= 720 && minutes <= 840){
+
+    afternoonBtn.disabled = false;
+
+  }else{
+
+    afternoonBtn.disabled = true;
+
+  }
+
+}
+
+
+/* LOCATION */
+
+function getLocation(type){
+
+  if(!navigator.geolocation){
+
+    alert("Location is not supported by this browser.");
+    return;
+
+  }
+
+  const text =
+    type === "morning"
+    ? "morningLocation"
+    : "afternoonLocation";
+
+
+  document.getElementById(text).textContent =
+    "Capturing location...";
+
+
+  navigator.geolocation.getCurrentPosition(
+
+    function(position){
+
+      const lat =
+        position.coords.latitude.toFixed(6);
+
+      const lon =
+        position.coords.longitude.toFixed(6);
+
+
+      const locationData = {
+        latitude:lat,
+        longitude:lon,
+        accuracy:position.coords.accuracy
+      };
+
+
+      if(type === "morning"){
+
+        morningLocation = locationData;
+
+      }else{
+
+        afternoonLocation = locationData;
+
       }
 
-      if (!name) {
-        alert("Please enter your name.");
-        return;
-      }
 
-      if (!id) {
-        alert("Please enter your Employee ID / Roll Number.");
-        return;
-      }
+      document.getElementById(text).textContent =
+        lat + ", " + lon;
 
-      status.style.display = "block";
+    },
 
-      status.innerHTML =
-        "✓ Attendance submitted for " +
-        name +
-        " at " +
-        hospital;
+    function(){
 
+      document.getElementById(text).textContent =
+        "Location permission denied.";
+
+      alert(
+        "Please allow location permission and try again."
+      );
+
+    },
+
+    {
+      enableHighAccuracy:true,
+      timeout:15000
     }
 
-  </script>
+  );
+
+}
+
+
+/* PHOTO PREVIEW */
+
+document.getElementById("morningPhoto")
+.addEventListener("change",function(){
+
+  previewPhoto(this,"morningPreview");
+
+});
+
+
+document.getElementById("afternoonPhoto")
+.addEventListener("change",function(){
+
+  previewPhoto(this,"afternoonPreview");
+
+});
+
+
+function previewPhoto(input,id){
+
+  if(input.files && input.files[0]){
+
+    const reader = new FileReader();
+
+    reader.onload = function(e){
+
+      const img =
+        document.getElementById(id);
+
+      img.src = e.target.result;
+      img.style.display = "block";
+
+    };
+
+    reader.readAsDataURL(input.files[0]);
+
+  }
+
+}
+
+
+/* VALIDATE DETAILS */
+
+function validateDetails(){
+
+  const name =
+    document.getElementById("name").value.trim();
+
+  const roll =
+    document.getElementById("roll").value.trim();
+
+  const facility =
+    document.getElementById("facility").value;
+
+
+  if(!name){
+
+    alert("Please enter ANM Name.");
+    return false;
+
+  }
+
+  if(!roll){
+
+    alert("Please enter Roll Number.");
+    return false;
+
+  }
+
+  if(!facility){
+
+    alert("Please select Hospital / Facility.");
+    return false;
+
+  }
+
+  return true;
+
+}
+
+
+/* MORNING ATTENDANCE */
+
+function morningAttendance(){
+
+  if(!validateDetails()) return;
+
+
+  const minutes = getMinutes();
+
+  if(minutes < 480){
+
+    alert("Morning attendance opens at 8:00 AM.");
+    return;
+
+  }
+
+
+  if(morningRecord){
+
+    alert("Morning attendance already submitted today.");
+    return;
+
+  }
+
+
+  if(!morningLocation){
+
+    alert("Please capture your location first.");
+    return;
+
+  }
+
+
+  const photo =
+    document.getElementById("morningPhoto").files[0];
+
+
+  if(!photo){
+
+    alert("Please take/upload your morning photo.");
+    return;
+
+  }
+
+
+  const now = new Date();
+
+
+  morningRecord = {
+
+    name:
+      document.getElementById("name").value.trim(),
+
+    roll:
+      document.getElementById("roll").value.trim(),
+
+    facility:
+      document.getElementById("facility").value,
+
+    date:
+      now.toLocaleDateString("en-IN"),
+
+    time:
+      now.toLocaleTimeString("en-IN"),
+
+    location:
+      morningLocation.latitude +
+      ", " +
+      morningLocation.longitude
+
+  };
+
+
+  localStorage.setItem(
+    "anmMorning",
+    JSON.stringify(morningRecord)
+  );
+
+
+  showStatus(
+    "morningStatus",
+    "✓ Morning attendance submitted successfully.",
+    "success"
+  );
+
+
+  updateResult();
+
+}
+
+
+/* COMPLETE ATTENDANCE */
+
+function completeAttendance(){
+
+  if(!validateDetails()) return;
+
+
+  const minutes = getMinutes();
+
+
+  if(minutes < 720 || minutes > 840){
+
+    alert(
+      "Complete Attendance is available only from 12:00 PM to 2:00 PM."
+    );
+
+    return;
+
+  }
+
+
+  if(!morningRecord){
+
+    alert(
+      "First complete Morning Attendance."
+    );
+
+    return;
+
+  }
+
+
+  if(afternoonRecord){
+
+    alert(
+      "Complete Attendance already submitted today."
+    );
+
+    return;
+
+  }
+
+
+  if(!afternoonLocation){
+
+    alert(
+      "Please capture afternoon location first."
+    );
+
+    return;
+
+  }
+
+
+  const photo =
+    document.getElementById("afternoonPhoto").files[0];
+
+
+  if(!photo){
+
+    alert(
+      "Please take/upload afternoon photo."
+    );
+
+    return;
+
+  }
+
+
+  const now = new Date();
+
+
+  afternoonRecord = {
+
+    time:
+      now.toLocaleTimeString("en-IN"),
+
+    location:
+      afternoonLocation.latitude +
+      ", " +
+      afternoonLocation.longitude
+
+  };
+
+
+  localStorage.setItem(
+    "anmAfternoon",
+    JSON.stringify(afternoonRecord)
+  );
+
+
+  showStatus(
+    "afternoonStatus",
+    "✓ Complete Attendance submitted successfully!",
+    "success"
+  );
+
+
+  updateResult();
+
+}
+
+
+/* STATUS */
+
+function showStatus(id,message,type){
+
+  const box =
+    document.getElementById(id);
+
+  box.className =
+    "status " + type;
+
+  box.textContent =
+    message;
+
+  box.style.display =
+    "block";
+
+}
+
+
+/* LOAD SAVED DATA */
+
+function loadSaved(){
+
+  const m =
+    localStorage.getItem("anmMorning");
+
+  const a =
+    localStorage.getItem("anmAfternoon");
+
+
+  if(m){
+
+    morningRecord =
+      JSON.parse(m);
+
+  }
+
+
+  if(a){
+
+    afternoonRecord =
+      JSON.parse(a);
+
+  }
+
+
+  updateResult();
+
+}
+
+
+function updateResult(){
+
+  const box =
+    document.getElementById("attendanceResult");
+
+
+  if(!morningRecord){
+
+    box.innerHTML =
+      "❌ Morning attendance not submitted.";
+
+    return;
+
+  }
+
+
+  let html = `
+
+  <div class="attendance">
+
+    <b>👩‍⚕️ ANM:</b>
+    ${morningRecord.name}<br>
+
+    <b>🔢 Roll No:</b>
+    ${morningRecord.roll}<br>
+
+    <b>🏥 Facility:</b>
+    ${morningRecord.facility}<br>
+
+    <b>🌅 Morning:</b>
+    ✓ ${morningRecord.time}<br>
+
+    <b>📍 Location:</b>
+    ${morningRecord.location}<br>
+
+  `;
+
+
+  if(afternoonRecord){
+
+    html += `
+
+      <b>☀️ Complete:</b>
+      ✓ ${afternoonRecord.time}<br>
+
+      <b>📍 Afternoon Location:</b>
+      ${afternoonRecord.location}<br>
+
+      <br>
+
+      <strong>🟢 COMPLETE ATTENDANCE</strong>
+
+    `;
+
+  }else{
+
+    html += `
+
+      <br>
+      🟡 Morning complete.
+      <br>
+      Complete Attendance pending.
+
+    `;
+
+  }
+
+
+  html += "</div>";
+
+
+  box.innerHTML =
+    html;
+
+}
+
+
+/* WHATSAPP */
+
+function sendWhatsApp(){
+
+  if(!morningRecord){
+
+    alert(
+      "Please submit attendance first."
+    );
+
+    return;
+
+  }
+
+
+  let message =
+    "ANM ATTENDANCE%0A%0A" +
+
+    "Name: " +
+    encodeURIComponent(morningRecord.name) +
+
+    "%0ARoll No: " +
+    encodeURIComponent(morningRecord.roll) +
+
+    "%0AFacility: " +
+    encodeURIComponent(morningRecord.facility) +
+
+    "%0ADate: " +
+    encodeURIComponent(morningRecord.date) +
+
+    "%0AMorning Time: " +
+    encodeURIComponent(morningRecord.time) +
+
+    "%0AMorning Location: " +
+    encodeURIComponent(morningRecord.location);
+
+
+  if(afternoonRecord){
+
+    message +=
+
+      "%0AComplete Time: " +
+      encodeURIComponent(afternoonRecord.time) +
+
+      "%0AAfternoon Location: " +
+      encodeURIComponent(afternoonRecord.location) +
+
+      "%0A%0ASTATUS: COMPLETE ATTENDANCE";
+
+  }else{
+
+    message +=
+      "%0A%0ASTATUS: MORNING ONLY";
+
+  }
+
+
+  const url =
+    "https://wa.me/" +
+    SIR_NUMBER +
+    "?text=" +
+    message;
+
+
+  window.open(url,"_blank");
+
+}
+
+
+/* START */
+
+loadSaved();
+
+</script>
 
 </body>
 </html>
