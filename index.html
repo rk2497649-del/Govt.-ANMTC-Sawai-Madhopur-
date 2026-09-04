@@ -1244,3 +1244,111 @@ body::after{
   box-shadow:0 6px 20px rgba(143,22,75,.16);
 }
 </style>
+<script>
+/* 📸 PHOTO + ATTENDANCE SHARE */
+async function shareAttendanceWithPhoto() {
+
+  const photoInput = document.querySelector('input[type="file"][accept*="image"]');
+
+  if (!photoInput || !photoInput.files || !photoInput.files[0]) {
+    alert("Pehle attendance photo click karo 📸");
+    return;
+  }
+
+  const photo = photoInput.files[0];
+
+  const name =
+    document.querySelector('#name')?.value ||
+    document.querySelector('[name="name"]')?.value ||
+    "ANM";
+
+  const roll =
+    document.querySelector('#roll')?.value ||
+    document.querySelector('[name="roll"]')?.value ||
+    "";
+
+  const facility =
+    document.querySelector('#facility')?.value ||
+    document.querySelector('[name="facility"]')?.value ||
+    "Govt. ANMTC Sawai Madhopur";
+
+  const message =
+`📋 ANM ATTENDANCE
+
+👩 ANM Name: ${name}
+🆔 Roll No: ${roll}
+🏥 Facility: ${facility}
+
+📅 Date: ${new Date().toLocaleDateString('en-IN')}
+⏰ Time: ${new Date().toLocaleTimeString('en-IN')}
+
+📸 Attendance Photo Attached`;
+
+  try {
+
+    const shareFile = new File(
+      [photo],
+      "ANM_Attendance_Photo.jpg",
+      { type: photo.type || "image/jpeg" }
+    );
+
+    if (
+      navigator.share &&
+      navigator.canShare &&
+      navigator.canShare({ files: [shareFile] })
+    ) {
+
+      await navigator.share({
+        title: "ANM Attendance",
+        text: message,
+        files: [shareFile]
+      });
+
+    } else {
+
+      alert(
+        "Is phone/browser me photo sharing supported nahi hai.\n" +
+        "WhatsApp me photo manually attach karni hogi."
+      );
+
+    }
+
+  } catch (error) {
+
+    if (error.name !== "AbortError") {
+      alert("Photo share nahi ho payi. Dobara try karo.");
+    }
+
+  }
+}
+</script>
+
+<script>
+/* Existing WhatsApp buttons ko Photo Share se connect karna */
+document.addEventListener("DOMContentLoaded", function () {
+
+  const buttons = document.querySelectorAll(
+    ".whatsapp, button"
+  );
+
+  buttons.forEach(function(button) {
+
+    const text = button.innerText.toLowerCase();
+
+    if (
+      text.includes("whatsapp") ||
+      text.includes("share attendance") ||
+      text.includes("attendance share")
+    ) {
+
+      button.onclick = function(e) {
+        e.preventDefault();
+        shareAttendanceWithPhoto();
+      };
+
+    }
+
+  });
+
+});
+</script>
