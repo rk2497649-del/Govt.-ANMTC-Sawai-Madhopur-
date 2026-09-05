@@ -1754,3 +1754,135 @@ async function saveAttendanceToFirebase(data){
 }
 
 </script>
+<script>
+
+/* =========================
+   FIREBASE MORNING ATTENDANCE
+   OVERRIDE
+========================= */
+
+async function markMorningAttendance(){
+
+    if(!validateStudent())
+        return;
+
+    const now = new Date();
+
+    const totalMinutes =
+        now.getHours() * 60 +
+        now.getMinutes();
+
+    if(totalMinutes < 480){
+
+        alert("Morning attendance opens at 8:00 AM.");
+
+        return;
+    }
+
+    const photo =
+        document.getElementById("morningPhoto").files[0];
+
+    if(!photo){
+
+        alert("Please take/select your photo first 📸");
+
+        return;
+    }
+
+    if(!morningCoords){
+
+        alert("Please capture your current location first 📍");
+
+        return;
+    }
+
+    const student = getStudentDetails();
+
+    const attendanceData = {
+
+        name: student.name,
+
+        roll: student.roll,
+
+        facility: student.facility,
+
+        date: todayKey(),
+
+        dateTime:
+            now.toLocaleString("en-IN",{
+                day:"2-digit",
+                month:"2-digit",
+                year:"numeric",
+                hour:"2-digit",
+                minute:"2-digit",
+                second:"2-digit",
+                hour12:true
+            }),
+
+        morningTime:
+            now.toLocaleTimeString("en-IN",{
+                hour:"2-digit",
+                minute:"2-digit",
+                second:"2-digit",
+                hour12:true
+            }),
+
+        latitude:
+            morningCoords.latitude,
+
+        longitude:
+            morningCoords.longitude,
+
+        morningStatus:"Completed"
+
+    };
+
+    try{
+
+        await saveAttendanceToFirebase(
+            attendanceData
+        );
+
+        /* Local photo only */
+        const reader = new FileReader();
+
+        reader.onload = function(e){
+
+            localStorage.setItem(
+                "anmMorningPhoto",
+                e.target.result
+            );
+
+        };
+
+        reader.readAsDataURL(photo);
+
+        /* Local data for button control */
+        localStorage.setItem(
+            "anmMorning",
+            JSON.stringify(attendanceData)
+        );
+
+        showStatus(
+            "morningStatus",
+            "success",
+            "✅ Morning attendance successfully recorded!"
+        );
+
+        updateButtons();
+
+    }catch(error){
+
+        console.error(error);
+
+        showStatus(
+            "morningStatus",
+            "error",
+            "❌ Attendance save nahi ho paayi. Internet check karein."
+        );
+
+    }
+
+}
+
+</script>
