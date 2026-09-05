@@ -2187,3 +2187,91 @@ function displayTodayAttendance(){
 }
 
 </script>
+<script>
+
+/* =========================
+   SHOW SAVED LOCAL PHOTO
+========================= */
+
+function showSavedAttendancePhotos(){
+
+    const morningPhoto =
+        localStorage.getItem("anmMorningPhoto");
+
+    const afternoonPhoto =
+        localStorage.getItem("anmAfternoonPhoto");
+
+    let oldBox =
+        document.getElementById("savedPhotoViewer");
+
+    if(oldBox)
+        oldBox.remove();
+
+    if(!morningPhoto && !afternoonPhoto)
+        return;
+
+    const box =
+        document.createElement("div");
+
+    box.id = "savedPhotoViewer";
+
+    box.className = "card";
+
+    let html =
+        "<h2>📸 Attendance Photo</h2>";
+
+    if(morningPhoto){
+
+        html += `
+            <div class="attendance-row">
+                <b>🌅 Morning Photo</b><br><br>
+                <img
+                    src="${morningPhoto}"
+                    style="
+                        width:100%;
+                        max-height:400px;
+                        object-fit:contain;
+                        border-radius:15px;
+                        border:1px solid #e5b5ca;
+                    "
+                >
+            </div>
+        `;
+
+    }
+
+    if(afternoonPhoto){
+
+        html += `
+            <div class="attendance-row">
+                <b>🌞 Complete Attendance Photo</b><br><br>
+                <img
+                    src="${afternoonPhoto}"
+                    style="
+                        width:100%;
+                        max-height:400px;
+                        object-fit:contain;
+                        border-radius:15px;
+                        border:1px solid #e5b5ca;
+                    "
+                >
+            </div>
+        `;
+
+    }
+
+    box.innerHTML = html;
+
+    const container =
+        document.querySelector(".container");
+
+    if(container)
+        container.appendChild(box);
+
+}
+
+
+/* Show photo when page opens */
+showSavedAttendancePhotos();
+
+</script>
