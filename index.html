@@ -2065,3 +2065,112 @@ async function markAfternoonAttendance(){
 }
 
 </script>
+<script>
+
+/* =========================
+   FIREBASE TODAY ATTENDANCE
+========================= */
+
+async function loadTodayAttendanceFromFirebase(){
+
+    const box =
+        document.getElementById("todayAttendance");
+
+    const today = todayKey();
+
+    try{
+
+        const snapshot = await db
+            .collection("attendance")
+            .where("date","==",today)
+            .get();
+
+        let html = "";
+
+        snapshot.forEach(function(doc){
+
+            const data = doc.data();
+
+            html += `
+
+            <div class="attendance-row">
+
+                <b>👩‍⚕️ ${data.name || "ANM"}</b><br>
+
+                🔢 Roll No: ${data.roll || "-"}<br>
+
+                🏥 Facility: ${data.facility || "-"}<br>
+
+                ${
+                    data.morningStatus
+                    ?
+                    `
+                    <span class="badge badge-green">
+                        🌅 Morning ✅
+                    </span>
+                    <br>
+                    <span class="small">
+                        🕐 ${data.morningTime || "-"}
+                    </span>
+                    <br>
+                    `
+                    :
+                    ""
+                }
+
+                ${
+                    data.afternoonStatus
+                    ?
+                    `
+                    <span class="badge badge-green">
+                        🌞 Complete ✅
+                    </span>
+                    <br>
+                    <span class="small">
+                        🕐 ${data.afternoonTime || "-"}
+                    </span>
+                    `
+                    :
+                    ""
+                }
+
+                <br>
+
+                <span class="small">
+                    📅 ${data.date || today}
+                </span>
+
+            </div>
+
+            `;
+
+        });
+
+        if(!html){
+
+            html =
+                "No attendance recorded today.";
+
+        }
+
+        box.innerHTML = html;
+
+    }catch(error){
+
+        console.error(
+            "Firebase attendance loading error:",
+            error
+        );
+
+        box.innerHTML =
+            "Unable to load attendance. Please check internet connection.";
+
+    }
+
+}
+
+
+/* Load Firebase attendance */
+loadTodayAttendanceFromFirebase();
+
+</script>
