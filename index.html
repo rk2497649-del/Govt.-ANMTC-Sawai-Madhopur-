@@ -2376,3 +2376,114 @@ function sendWhatsApp(){
 }
 
 </script>
+<script>
+/* ===== FINAL PHOTO + ATTENDANCE DISPLAY FIX ===== */
+
+/* Remove separate photo section */
+showSavedAttendancePhotos = function(){};
+
+const oldPhotoBox = document.getElementById("savedPhotoViewer");
+if(oldPhotoBox){
+    oldPhotoBox.remove();
+}
+
+/* Attendance records with photo */
+async function loadTodayAttendanceFromFirebase(){
+
+    const box = document.getElementById("todayAttendance");
+    const today = todayKey();
+
+    try{
+
+        const snapshot = await db.collection("attendance")
+            .where("date","==",today)
+            .get();
+
+        let html = "";
+
+        snapshot.forEach(function(doc){
+
+            const data = doc.data();
+
+            /* Find local photo for this ANM */
+            let morningPhoto = localStorage.getItem("anmMorningPhoto");
+            let afternoonPhoto = localStorage.getItem("anmAfternoonPhoto");
+
+            let photoHTML = "";
+
+            if(morningPhoto){
+                photoHTML =
+                    '<img src="' + morningPhoto + '" ' +
+                    'style="width:80px;height:80px;object-fit:cover;border-radius:50%;' +
+                    'border:3px solid #e91e63;display:block;margin:10px auto;">';
+            }
+            else if(afternoonPhoto){
+                photoHTML =
+                    '<img src="' + afternoonPhoto + '" ' +
+                    'style="width:80px;height:80px;object-fit:cover;border-radius:50%;' +
+                    'border:3px solid #e91e63;display:block;margin:10px auto;">';
+            }
+
+            html +=
+                '<div style="' +
+                'background:white;' +
+                'border-radius:15px;' +
+                'padding:15px;' +
+                'margin-bottom:12px;' +
+                'box-shadow:0 4px 12px rgba(0,0,0,.10);' +
+                'text-align:center;">' +
+
+                photoHTML +
+
+                '<div style="font-size:18px;font-weight:bold;color:#172554;">' +
+                '👩 ' + (data.name || "ANM") +
+                '</div>' +
+
+                '<div style="margin-top:5px;color:#555;">' +
+                '🔢 Roll No: ' + (data.roll || "-") +
+                '</div>' +
+
+                '<div style="color:#555;">' +
+                '🏥 ' + (data.facility || "-") +
+                '</div>';
+
+            if(data.morningStatus){
+                html +=
+                    '<div style="margin-top:10px;color:green;font-weight:bold;">' +
+                    '🌅 Morning Present — ' +
+                    (data.morningTime || "") +
+                    '</div>';
+            }
+
+            if(data.afternoonStatus){
+                html +=
+                    '<div style="margin-top:5px;color:#e91e63;font-weight:bold;">' +
+                    '🌆 Complete — ' +
+                    (data.afternoonTime || "") +
+                    '</div>';
+            }
+
+            html += '</div>';
+
+        });
+
+        if(!html){
+            html = "No attendance recorded today.";
+        }
+
+        box.innerHTML = html;
+
+    }catch(error){
+
+        console.error(error);
+
+        box.innerHTML =
+            "Unable to load attendance. Please check internet connection.";
+
+    }
+}
+
+/* Load attendance */
+loadTodayAttendanceFromFirebase();
+
+</script>
