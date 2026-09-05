@@ -1721,3 +1721,36 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 </script>
+<script>
+
+async function saveAttendanceToFirebase(data){
+
+    try{
+
+        const docId =
+            data.date + "_" +
+            data.roll;
+
+        await db
+            .collection("attendance")
+            .doc(docId)
+            .set(data, { merge:true });
+
+        console.log("Attendance saved to Firebase");
+
+    }catch(error){
+
+        console.error(
+            "Firebase save error:",
+            error
+        );
+
+        alert(
+            "Attendance Firebase me save nahi ho paayi. Internet check karein."
+        );
+
+    }
+
+}
+
+</script>
