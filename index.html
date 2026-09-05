@@ -1886,3 +1886,182 @@ async function markMorningAttendance(){
 }
 
 </script>
+<script>
+
+/* =========================
+   FIREBASE COMPLETE ATTENDANCE
+   OVERRIDE
+========================= */
+
+async function markAfternoonAttendance(){
+
+    if(!validateStudent())
+        return;
+
+    const now = new Date();
+
+    const totalMinutes =
+        now.getHours() * 60 +
+        now.getMinutes();
+
+    if(totalMinutes < 720){
+
+        alert("Complete attendance opens at 12:00 PM.");
+
+        return;
+    }
+
+    if(totalMinutes > 840){
+
+        alert("Complete attendance is closed after 2:00 PM.");
+
+        return;
+    }
+
+    const morning =
+        localStorage.getItem("anmMorning");
+
+    if(!morning){
+
+        alert(
+            "Morning attendance must be completed first."
+        );
+
+        return;
+    }
+
+    try{
+
+        const morningData =
+            JSON.parse(morning);
+
+        if(morningData.date !== todayKey()){
+
+            alert(
+                "Today's morning attendance is required first."
+            );
+
+            return;
+        }
+
+    }catch(e){
+
+        alert(
+            "Morning attendance data is invalid."
+        );
+
+        return;
+    }
+
+    const photo =
+        document.getElementById("afternoonPhoto").files[0];
+
+    if(!photo){
+
+        alert(
+            "Please take/select your photo first 📸"
+        );
+
+        return;
+    }
+
+    if(!afternoonCoords){
+
+        alert(
+            "Please capture your current location first 📍"
+        );
+
+        return;
+    }
+
+    const student =
+        getStudentDetails();
+
+    const attendanceData = {
+
+        name: student.name,
+
+        roll: student.roll,
+
+        facility: student.facility,
+
+        date: todayKey(),
+
+        afternoonTime:
+            now.toLocaleTimeString("en-IN",{
+                hour:"2-digit",
+                minute:"2-digit",
+                second:"2-digit",
+                hour12:true
+            }),
+
+        dateTime:
+            now.toLocaleString("en-IN",{
+                day:"2-digit",
+                month:"2-digit",
+                year:"numeric",
+                hour:"2-digit",
+                minute:"2-digit",
+                second:"2-digit",
+                hour12:true
+            }),
+
+        latitude:
+            afternoonCoords.latitude,
+
+        longitude:
+            afternoonCoords.longitude,
+
+        afternoonStatus:"Completed"
+
+    };
+
+    try{
+
+        await saveAttendanceToFirebase(
+            attendanceData
+        );
+
+        /* Local photo only */
+        const reader = new FileReader();
+
+        reader.onload = function(e){
+
+            localStorage.setItem(
+                "anmAfternoonPhoto",
+                e.target.result
+            );
+
+        };
+
+        reader.readAsDataURL(photo);
+
+        /* Local data for button control */
+        localStorage.setItem(
+            "anmAfternoon",
+            JSON.stringify(attendanceData)
+        );
+
+        showStatus(
+            "afternoonStatus",
+            "success",
+            "✅ Complete attendance successfully recorded!"
+        );
+
+        updateButtons();
+
+    }catch(error){
+
+        console.error(error);
+
+        showStatus(
+            "afternoonStatus",
+            "error",
+            "❌ Attendance save nahi ho paayi. Internet check karein."
+        );
+
+    }
+
+}
+
+</script>
