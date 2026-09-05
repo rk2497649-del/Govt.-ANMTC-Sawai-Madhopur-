@@ -1697,3 +1697,27 @@ displayTodayAttendance();
     </div>
 
 </div>
+<!-- =========================
+     FIREBASE CONNECTION
+========================= -->
+
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
+<script>
+
+const firebaseConfig = {
+    apiKey: "AIzaSyCWqtyDv6ad78amhO3NyJDdHooxNq9CqKM",
+    authDomain: "anmtc-swm-attendance.firebaseapp.com",
+    projectId: "anmtc-swm-attendance",
+    storageBucket: "anmtc-swm-attendance.firebasestorage.app",
+    messagingSenderId: "356019916587",
+    appId: "1:356019916587:web:f562eab2fb1df68d223f6e",
+    measurementId: "G-8MHFFV74EM"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.firestore();
+
+</script>
