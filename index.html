@@ -2487,3 +2487,175 @@ async function loadTodayAttendanceFromFirebase(){
 loadTodayAttendanceFromFirebase();
 
 </script>
+<script>
+/* ===== 50-50 ATTENDANCE CARD WITH LARGE PHOTO ===== */
+
+async function loadTodayAttendanceFromFirebase(){
+
+    const box = document.getElementById("todayAttendance");
+    const today = todayKey();
+
+    try{
+
+        const snapshot = await db.collection("attendance")
+            .where("date","==",today)
+            .get();
+
+        let html = "";
+
+        snapshot.forEach(function(doc){
+
+            const data = doc.data();
+
+            let morningPhoto = localStorage.getItem("anmMorningPhoto");
+            let afternoonPhoto = localStorage.getItem("anmAfternoonPhoto");
+
+            let photo = afternoonPhoto || morningPhoto;
+
+            html += `
+            <div style="
+                background:white;
+                border-radius:18px;
+                padding:12px;
+                margin-bottom:15px;
+                box-shadow:0 5px 15px rgba(0,0,0,.12);
+                display:flex;
+                width:100%;
+                min-height:190px;
+                overflow:hidden;
+            ">
+
+                <!-- LEFT: BIODATA -->
+                <div style="
+                    width:50%;
+                    padding:10px;
+                    display:flex;
+                    flex-direction:column;
+                    justify-content:center;
+                    text-align:left;
+                    border-right:2px solid #f3d1df;
+                ">
+
+                    <div style="
+                        font-size:18px;
+                        font-weight:bold;
+                        color:#172554;
+                        margin-bottom:10px;
+                    ">
+                        👩 ${data.name || "ANM"}
+                    </div>
+
+                    <div style="
+                        font-size:14px;
+                        color:#555;
+                        margin-bottom:7px;
+                    ">
+                        🔢 Roll No: ${data.roll || "-"}
+                    </div>
+
+                    <div style="
+                        font-size:14px;
+                        color:#555;
+                        margin-bottom:10px;
+                    ">
+                        🏥 ${data.facility || "-"}
+                    </div>
+
+                    ${
+                        data.morningStatus
+                        ?
+                        `<div style="
+                            color:green;
+                            font-weight:bold;
+                            font-size:13px;
+                            margin-bottom:6px;
+                        ">
+                            🌅 Morning Present
+                        </div>
+                        <div style="font-size:12px;color:#666;">
+                            ⏰ ${data.morningTime || ""}
+                        </div>`
+                        : ""
+                    }
+
+                    ${
+                        data.afternoonStatus
+                        ?
+                        `<div style="
+                            color:#e91e63;
+                            font-weight:bold;
+                            font-size:13px;
+                            margin-top:8px;
+                        ">
+                            🌆 Complete Present
+                        </div>
+                        <div style="font-size:12px;color:#666;">
+                            ⏰ ${data.afternoonTime || ""}
+                        </div>`
+                        : ""
+                    }
+
+                </div>
+
+
+                <!-- RIGHT: LARGE PHOTO -->
+                <div style="
+                    width:50%;
+                    padding:8px;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                ">
+
+                    ${
+                        photo
+                        ?
+                        `<img src="${photo}" style="
+                            width:100%;
+                            height:165px;
+                            object-fit:cover;
+                            border-radius:14px;
+                            border:3px solid #e91e63;
+                            display:block;
+                        ">`
+                        :
+                        `<div style="
+                            width:100%;
+                            height:165px;
+                            border-radius:14px;
+                            background:#f8f8f8;
+                            display:flex;
+                            align-items:center;
+                            justify-content:center;
+                            color:#777;
+                            font-size:13px;
+                            text-align:center;
+                        ">
+                            📷 Photo<br>Not Available
+                        </div>`
+                    }
+
+                </div>
+
+            </div>
+            `;
+        });
+
+        if(!html){
+            html = "No attendance recorded today.";
+        }
+
+        box.innerHTML = html;
+
+    }catch(error){
+
+        console.error("Firebase attendance loading error:",error);
+
+        box.innerHTML =
+            "Unable to load attendance. Please check internet connection.";
+    }
+}
+
+loadTodayAttendanceFromFirebase();
+
+</script>
