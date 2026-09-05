@@ -2275,3 +2275,104 @@ function showSavedAttendancePhotos(){
 showSavedAttendancePhotos();
 
 </script>
+<script>
+
+/* =========================
+   DIRECT WHATSAPP
+========================= */
+
+function sendWhatsApp(){
+
+    if(!validateStudent())
+        return;
+
+    const student =
+        getStudentDetails();
+
+    let message =
+        "🏥 Govt. ANMTC Sawai Madhopur\n" +
+        "📋 ANM Attendance Report\n\n" +
+
+        "👩 ANM Name: " +
+        student.name + "\n" +
+
+        "🔢 Roll Number: " +
+        student.roll + "\n" +
+
+        "🏥 Facility: " +
+        student.facility + "\n" +
+
+        "📅 Date: " +
+        todayKey() + "\n\n";
+
+    const morning =
+        localStorage.getItem("anmMorning");
+
+    const afternoon =
+        localStorage.getItem("anmAfternoon");
+
+    if(morning){
+
+        try{
+
+            const data =
+                JSON.parse(morning);
+
+            if(data.date === todayKey()){
+
+                message +=
+                    "🌅 Morning Attendance: ✅ Completed\n" +
+                    "🕐 Time: " +
+                    (data.dateTime || "-") + "\n" +
+                    "📍 Location: " +
+                    (data.latitude || "-") +
+                    ", " +
+                    (data.longitude || "-") +
+                    "\n\n";
+
+            }
+
+        }catch(e){}
+
+    }
+
+    if(afternoon){
+
+        try{
+
+            const data =
+                JSON.parse(afternoon);
+
+            if(data.date === todayKey()){
+
+                message +=
+                    "🌞 Complete Attendance: ✅ Completed\n" +
+                    "🕐 Time: " +
+                    (data.dateTime || "-") + "\n" +
+                    "📍 Location: " +
+                    (data.latitude || "-") +
+                    ", " +
+                    (data.longitude || "-") +
+                    "\n\n";
+
+            }
+
+        }catch(e){}
+
+    }
+
+    message +=
+        "Sent from ANM Attendance System.";
+
+    const whatsappURL =
+        "https://wa.me/" +
+        SIR_NUMBER +
+        "?text=" +
+        encodeURIComponent(message);
+
+    window.location.href =
+        whatsappURL;
+
+}
+
+</script>
