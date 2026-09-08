@@ -4319,7 +4319,70 @@ setTimeout(function(){
     margin-top:0 !important;
 }
 </style>
+<script>
+/* ===== FINAL VERTICAL NAME / ROLL / YEAR / FACILITY ===== */
+(function () {
 
+    const css = document.createElement("style");
+
+    css.textContent = `
+        #anmName,
+        #rollNumber,
+        #anmYear,
+        #facility {
+            width: 100% !important;
+            display: block !important;
+            box-sizing: border-box !important;
+        }
+
+        #anmName,
+        #rollNumber {
+            margin-bottom: 12px !important;
+        }
+
+        #anmYear,
+        #facility {
+            margin-bottom: 12px !important;
+        }
+
+        /* Force each field onto its own line */
+        #anmName,
+        #rollNumber,
+        #anmYear,
+        #facility {
+            float: none !important;
+            clear: both !important;
+        }
+    `;
+
+    document.head.appendChild(css);
+
+    function makeVertical() {
+        const fields = [
+            document.getElementById("anmName"),
+            document.getElementById("rollNumber"),
+            document.getElementById("anmYear"),
+            document.getElementById("facility")
+        ].filter(Boolean);
+
+        fields.forEach(function (field) {
+            const parent = field.parentElement;
+
+            if (parent) {
+                parent.style.display = "block";
+                parent.style.width = "100%";
+                parent.style.float = "none";
+                parent.style.clear = "both";
+            }
+        });
+    }
+
+    makeVertical();
+    setTimeout(makeVertical, 500);
+    setTimeout(makeVertical, 1500);
+
+})();
+</script>
 
 
   
