@@ -5348,3 +5348,50 @@ document.getElementById("FINAL_TODAY_ATTENDANCE_BUTTON")
 
 })();
 </script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    // Existing Today's Attendance button
+    const btn = [...document.querySelectorAll("button, a, div")]
+        .find(el => el.textContent.trim().toLowerCase() === "today's attendance");
+
+    if (!btn) return;
+
+    // Existing attendance/history sections ko detect karo
+    const target = [...document.querySelectorAll("section, div, article, main")]
+        .find(el =>
+            /today['’]s attendance/i.test(el.textContent) &&
+            el !== btn &&
+            el.textContent.trim().length > 30
+        );
+
+    if (!target) return;
+
+    // Start hidden
+    target.style.display = "none";
+
+    btn.style.cursor = "pointer";
+    btn.style.userSelect = "none";
+
+    btn.addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (target.style.display === "none") {
+            target.style.display = "block";
+
+            // Smooth scroll to attendance
+            setTimeout(() => {
+                target.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+            }, 50);
+
+        } else {
+            target.style.display = "none";
+        }
+    });
+
+});
+</script>
