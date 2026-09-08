@@ -4245,3 +4245,302 @@ document.addEventListener("DOMContentLoaded", function () {
 <!-- =========================================================
      END WATERY FLOATING ATTENDANCE DESIGN
 ========================================================= -->
+<!-- =========================================================
+     FINAL OVERRIDE
+     TODAY ATTENDANCE = WATERY + TOGGLE OPEN/CLOSE
+     ATTENDANCE HISTORY FLOATING BUTTON HIDDEN
+     PASTE AT THE VERY END
+========================================================= -->
+
+<style>
+
+/* ===== HIDE NEW HISTORY FLOATING BUTTON ===== */
+
+.watery-history-btn,
+#wateryHistoryButton{
+    display:none !important;
+}
+
+
+/* ===== TODAY FLOATING BUTTON ===== */
+
+.watery-today-floating{
+    position:fixed !important;
+    right:16px !important;
+    bottom:90px !important;
+
+    z-index:999999 !important;
+
+    padding:12px 20px !important;
+    border-radius:30px !important;
+
+    color:#063f46 !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(0,210,190,.38),
+            rgba(70,170,255,.30),
+            rgba(255,255,255,.25)
+        ) !important;
+
+    border:1px solid
+        rgba(255,255,255,.65) !important;
+
+    backdrop-filter:blur(14px) !important;
+    -webkit-backdrop-filter:blur(14px) !important;
+
+    box-shadow:
+        0 10px 28px rgba(0,0,0,.18),
+        inset 0 1px 0 rgba(255,255,255,.8),
+        inset 0 -1px 0 rgba(255,255,255,.25) !important;
+
+    font-size:13px !important;
+    font-weight:900 !important;
+    letter-spacing:.6px !important;
+
+    cursor:pointer !important;
+
+    transition:
+        transform .25s ease,
+        background .25s ease,
+        box-shadow .25s ease !important;
+}
+
+
+/* ===== BUTTON HOVER ===== */
+
+.watery-today-floating:hover{
+
+    transform:
+        translateY(-3px) scale(1.03) !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(0,220,190,.48),
+            rgba(70,170,255,.40),
+            rgba(255,255,255,.30)
+        ) !important;
+
+    box-shadow:
+        0 14px 35px rgba(0,0,0,.22),
+        inset 0 1px 0 rgba(255,255,255,.9) !important;
+}
+
+
+/* ===== MOBILE ===== */
+
+@media(max-width:600px){
+
+    .watery-today-floating{
+
+        right:10px !important;
+        bottom:82px !important;
+
+        padding:10px 15px !important;
+
+        font-size:11px !important;
+
+    }
+
+}
+
+</style>
+
+
+<script>
+
+(function(){
+
+    let todayOpen = false;
+
+
+    /* =====================================================
+       FIND TODAY ATTENDANCE SECTION
+    ===================================================== */
+
+    function findTodaySection(){
+
+        const selectors = [
+
+            "#todayAttendance",
+            "#today-attendance",
+            ".today-attendance",
+            "[id*='todayAttendance']",
+            "[class*='today-attendance']"
+
+        ];
+
+        for(
+            let i = 0;
+            i < selectors.length;
+            i++
+        ){
+
+            const el =
+                document.querySelector(
+                    selectors[i]
+                );
+
+            if(el){
+                return el;
+            }
+
+        }
+
+        return null;
+
+    }
+
+
+    /* =====================================================
+       TODAY BUTTON TOGGLE
+    ===================================================== */
+
+    function setupToggle(){
+
+        const button =
+            document.querySelector(
+                ".watery-today-floating"
+            );
+
+        if(!button){
+            return;
+        }
+
+
+        /*
+           Prevent duplicate event
+        */
+
+        if(button.dataset.toggleReady){
+            return;
+        }
+
+        button.dataset.toggleReady = "yes";
+
+
+        button.addEventListener(
+            "click",
+            function(e){
+
+                e.preventDefault();
+                e.stopPropagation();
+
+
+                const section =
+                    findTodaySection();
+
+
+                /* =========================================
+                   OPEN
+                ========================================= */
+
+                if(!todayOpen){
+
+                    todayOpen = true;
+
+                    button.innerHTML =
+                        "📋 TODAY ATTENDANCE  ✕";
+
+
+                    if(
+                        typeof loadTodayAttendance ===
+                        "function"
+                    ){
+
+                        try{
+                            loadTodayAttendance();
+                        }catch(err){}
+
+                    }
+
+
+                    if(section){
+
+                        section.style.display =
+                            "";
+
+                        section.scrollIntoView({
+                            behavior:"smooth",
+                            block:"start"
+                        });
+
+                    }
+
+                }
+
+
+                /* =========================================
+                   CLOSE
+                ========================================= */
+
+                else{
+
+                    todayOpen = false;
+
+                    button.innerHTML =
+                        "📋 TODAY ATTENDANCE";
+
+
+                    if(section){
+
+                        section.style.display =
+                            "none";
+
+                    }
+
+                }
+
+            },
+            true
+        );
+
+    }
+
+
+    /* =====================================================
+       KEEP CHECKING UNTIL BUTTON EXISTS
+    ===================================================== */
+
+    function start(){
+
+        setupToggle();
+
+        setTimeout(
+            setupToggle,
+            500
+        );
+
+        setTimeout(
+            setupToggle,
+            1200
+        );
+
+    }
+
+
+    if(
+        document.readyState ===
+        "loading"
+    ){
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            start
+        );
+
+    }else{
+
+        start();
+
+    }
+
+})();
+
+</script>
+
+<!-- =========================================================
+     END FINAL OVERRIDE
+========================================================= -->
