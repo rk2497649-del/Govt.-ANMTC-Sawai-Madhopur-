@@ -7148,4 +7148,643 @@ document.addEventListener("DOMContentLoaded", function () {
 
 <!-- ============================================================
      END FINAL PHOTO SAVE + DISPLAY FIX
-     ============================================================ -->
+     ============================================================ --><!-- ============================================================
+     FINAL WORKING MORNING ATTENDANCE + PHOTO + PRESENT FIX
+     PASTE THIS AT THE VERY END OF index.html
+============================================================ -->
+
+<script>
+(function(){
+
+    console.log("FINAL MORNING ATTENDANCE FIX ACTIVE");
+
+    /* =========================================================
+       COMPRESS PHOTO
+    ========================================================= */
+    function compressAttendancePhoto(file){
+
+        return new Promise(function(resolve, reject){
+
+            const reader = new FileReader();
+
+            reader.onload = function(e){
+
+                const img = new Image();
+
+                img.onload = function(){
+
+                    let width = img.width;
+                    let height = img.height;
+
+                    const maxSize = 900;
+
+                    if(width > height && width > maxSize){
+
+                        height =
+                            Math.round(
+                                height * maxSize / width
+                            );
+
+                        width = maxSize;
+
+                    }else if(height > maxSize){
+
+                        width =
+                            Math.round(
+                                width * maxSize / height
+                            );
+
+                        height = maxSize;
+
+                    }
+
+                    const canvas =
+                        document.createElement("canvas");
+
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    const ctx =
+                        canvas.getContext("2d");
+
+                    ctx.drawImage(
+                        img,
+                        0,
+                        0,
+                        width,
+                        height
+                    );
+
+                    const dataURL =
+                        canvas.toDataURL(
+                            "image/jpeg",
+                            0.65
+                        );
+
+                    resolve(dataURL);
+
+                };
+
+                img.onerror = function(){
+
+                    reject(
+                        new Error(
+                            "Photo process nahi ho paayi."
+                        )
+                    );
+
+                };
+
+                img.src = e.target.result;
+
+            };
+
+            reader.onerror = function(){
+
+                reject(
+                    new Error(
+                        "Photo read nahi ho paayi."
+                    )
+                );
+
+            };
+
+            reader.readAsDataURL(file);
+
+        });
+
+    }
+
+
+    /* =========================================================
+       FINAL MORNING ATTENDANCE
+    ========================================================= */
+    async function FINAL_MORNING_ATTENDANCE(){
+
+        const button =
+            document.getElementById("morningBtn");
+
+        const status =
+            document.getElementById("morningStatus");
+
+        const progress =
+            document.getElementById("morningProgress");
+
+        const progressBar =
+            document.getElementById("morningProgressBar");
+
+
+        try{
+
+            /* ---------------------------------------------
+               STUDENT DETAILS
+            --------------------------------------------- */
+
+            const student =
+                getStudentDetails();
+
+            if(!student.name){
+
+                alert("Please enter ANM Name.");
+
+                return;
+            }
+
+            if(!student.roll){
+
+                alert("Please enter Roll Number.");
+
+                return;
+            }
+
+            if(!student.year){
+
+                alert("Please select Year.");
+
+                return;
+            }
+
+            if(!student.facility){
+
+                alert(
+                    "Please select Hospital / Facility."
+                );
+
+                return;
+            }
+
+
+            /* ---------------------------------------------
+               TIME
+            --------------------------------------------- */
+
+            const now = new Date();
+
+            const indiaParts =
+                new Intl.DateTimeFormat(
+                    "en-IN",
+                    {
+                        timeZone:"Asia/Kolkata",
+                        hour:"2-digit",
+                        minute:"2-digit",
+                        hour12:false
+                    }
+                ).formatToParts(now);
+
+            let hour = 0;
+            let minute = 0;
+
+            indiaParts.forEach(function(p){
+
+                if(p.type === "hour")
+                    hour = parseInt(p.value);
+
+                if(p.type === "minute")
+                    minute = parseInt(p.value);
+
+            });
+
+            const totalMinutes =
+                hour * 60 + minute;
+
+
+            if(totalMinutes < 480){
+
+                alert(
+                    "Morning attendance opens at 8:00 AM."
+                );
+
+                return;
+            }
+
+
+            /* ---------------------------------------------
+               PHOTO
+            --------------------------------------------- */
+
+            const photoInput =
+                document.getElementById("morningPhoto");
+
+            if(
+                !photoInput ||
+                !photoInput.files ||
+                !photoInput.files[0]
+            ){
+
+                alert(
+                    "Please take/select your photo first 📸"
+                );
+
+                return;
+            }
+
+            const photo =
+                photoInput.files[0];
+
+
+            /* ---------------------------------------------
+               LOCATION
+            --------------------------------------------- */
+
+            if(!morningCoords){
+
+                alert(
+                    "Please capture your current location first 📍"
+                );
+
+                return;
+            }
+
+
+            /* ---------------------------------------------
+               FIREBASE CHECK
+            --------------------------------------------- */
+
+            if(
+                typeof db === "undefined" ||
+                !db
+            ){
+
+                alert(
+                    "Firebase connection available nahi hai."
+                );
+
+                return;
+            }
+
+
+            /* ---------------------------------------------
+               BUTTON
+            --------------------------------------------- */
+
+            if(button){
+
+                button.disabled = true;
+
+                button.innerText =
+                    "⏳ SAVING ATTENDANCE...";
+
+            }
+
+            if(progress){
+
+                progress.style.display = "block";
+
+            }
+
+            if(progressBar){
+
+                progressBar.style.width = "15%";
+
+            }
+
+
+            /* ---------------------------------------------
+               PHOTO COMPRESS
+            --------------------------------------------- */
+
+            const photoURL =
+                await compressAttendancePhoto(photo);
+
+
+            if(progressBar){
+
+                progressBar.style.width = "55%";
+
+            }
+
+
+            /* ---------------------------------------------
+               ATTENDANCE RECORD
+            --------------------------------------------- */
+
+            const attendanceData = {
+
+                type:
+                    "Morning Attendance",
+
+                name:
+                    student.name,
+
+                roll:
+                    student.roll,
+
+                year:
+                    student.year,
+
+                facility:
+                    student.facility,
+
+                date:
+                    todayKey(),
+
+                dateTime:
+                    getIndiaDateTime(),
+
+                morningTime:
+                    getIndiaDateTime(),
+
+                location:
+                    morningCoords.place ||
+                    "Location captured",
+
+                latitude:
+                    morningCoords.latitude,
+
+                longitude:
+                    morningCoords.longitude,
+
+                morningStatus:
+                    "Completed",
+
+                status:
+                    "Present",
+
+                present:
+                    true,
+
+                photoURL:
+                    photoURL,
+
+                photoName:
+                    photo.name,
+
+                photoType:
+                    photo.type || "image/jpeg",
+
+                photoSaved:
+                    true,
+
+                createdAt:
+                    firebase.firestore.FieldValue
+                    .serverTimestamp()
+
+            };
+
+
+            /* ---------------------------------------------
+               CHECK EXISTING RECORD
+            --------------------------------------------- */
+
+            const existingSnapshot =
+                await db
+                .collection("attendance")
+                .where(
+                    "date",
+                    "==",
+                    todayKey()
+                )
+                .where(
+                    "roll",
+                    "==",
+                    student.roll
+                )
+                .where(
+                    "type",
+                    "==",
+                    "Morning Attendance"
+                )
+                .limit(1)
+                .get();
+
+
+            if(progressBar){
+
+                progressBar.style.width = "75%";
+
+            }
+
+
+            /* ---------------------------------------------
+               SAVE / UPDATE FIRESTORE
+            --------------------------------------------- */
+
+            if(!existingSnapshot.empty){
+
+                const existingDoc =
+                    existingSnapshot.docs[0];
+
+                await existingDoc.ref.set(
+                    attendanceData,
+                    {
+                        merge:true
+                    }
+                );
+
+            }else{
+
+                await db
+                .collection("attendance")
+                .add(
+                    attendanceData
+                );
+
+            }
+
+
+            /* ---------------------------------------------
+               LOCAL BACKUP
+            --------------------------------------------- */
+
+            try{
+
+                localStorage.setItem(
+                    "anmMorning",
+                    JSON.stringify(
+                        attendanceData
+                    )
+                );
+
+                localStorage.setItem(
+                    "anmMorningPhoto",
+                    photoURL
+                );
+
+            }catch(localError){
+
+                console.log(
+                    "Local backup skipped:",
+                    localError
+                );
+
+            }
+
+
+            if(progressBar){
+
+                progressBar.style.width = "100%";
+
+            }
+
+
+            /* ---------------------------------------------
+               SUCCESS
+            --------------------------------------------- */
+
+            showStatus(
+                "morningStatus",
+                "success",
+                "✅ MORNING ATTENDANCE MARKED SUCCESSFULLY!<br>" +
+                "🟢 PRESENT SAVED<br>" +
+                "📸 PHOTO SAVED"
+            );
+
+
+            if(button){
+
+                button.disabled = true;
+
+                button.innerText =
+                    "✅ Morning Attendance Completed";
+
+            }
+
+
+            /* ---------------------------------------------
+               REFRESH TODAY ATTENDANCE
+            --------------------------------------------- */
+
+            if(
+                typeof loadTodayAttendance ===
+                "function"
+            ){
+
+                await loadTodayAttendance();
+
+            }
+
+
+            /* ---------------------------------------------
+               REFRESH OTHER ATTENDANCE LOADER
+            --------------------------------------------- */
+
+            if(
+                typeof loadTodayAttendanceFromFirebase ===
+                "function"
+            ){
+
+                await loadTodayAttendanceFromFirebase();
+
+            }
+
+
+        }catch(error){
+
+            console.error(
+                "FINAL MORNING ATTENDANCE ERROR:",
+                error
+            );
+
+
+            if(button){
+
+                button.disabled = false;
+
+                button.innerText =
+                    "✅ Mark Morning Attendance";
+
+            }
+
+
+            if(progress){
+
+                progress.style.display = "none";
+
+            }
+
+
+            showStatus(
+                "morningStatus",
+                "error",
+                "❌ Attendance save nahi ho paayi.<br>" +
+                (
+                    error.message ||
+                    "Please try again."
+                )
+            );
+
+        }
+
+    }
+
+
+    /* =========================================================
+       OVERRIDE ALL OLD MORNING FUNCTIONS
+    ========================================================= */
+
+    window.markMorningAttendance =
+        FINAL_MORNING_ATTENDANCE;
+
+
+    /* =========================================================
+       FORCE BUTTON
+    ========================================================= */
+
+    function attachFinalMorningButton(){
+
+        const button =
+            document.getElementById(
+                "morningBtn"
+            );
+
+        if(!button)
+            return;
+
+
+        button.onclick =
+            function(event){
+
+                event.preventDefault();
+
+                event.stopPropagation();
+
+                FINAL_MORNING_ATTENDANCE();
+
+            };
+
+    }
+
+
+    /* =========================================================
+       ATTACH
+    ========================================================= */
+
+    if(
+        document.readyState ===
+        "loading"
+    ){
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            attachFinalMorningButton
+        );
+
+    }else{
+
+        attachFinalMorningButton();
+
+    }
+
+
+    setTimeout(
+        attachFinalMorningButton,
+        300
+    );
+
+    setTimeout(
+        attachFinalMorningButton,
+        1000
+    );
+
+    setTimeout(
+        attachFinalMorningButton,
+        2000
+    );
+
+
+})();
+</script>
+
+<!-- ============================================================
+     END FINAL WORKING MORNING ATTENDANCE FIX
+============================================================ -->
