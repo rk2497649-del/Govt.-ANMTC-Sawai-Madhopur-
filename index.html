@@ -3156,3 +3156,285 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 </script>
+<!-- ===============================
+     FINAL MORNING ATTENDANCE FIX
+     PASTE THIS AT THE VERY END
+================================ -->
+
+<script>
+(function () {
+
+    async function finalMarkMorningAttendance() {
+
+        try {
+
+            /* STUDENT DETAILS */
+            const student = getStudentDetails();
+
+            if (!student.name) {
+                alert("Please enter ANM Name.");
+                return;
+            }
+
+            if (!student.roll) {
+                alert("Please enter Roll Number.");
+                return;
+            }
+
+            if (!student.facility) {
+                alert("Please select Hospital / Facility.");
+                return;
+            }
+
+            /* TIME CHECK */
+            const now = new Date();
+
+            const totalMinutes =
+                now.getHours() * 60 + now.getMinutes();
+
+            if (totalMinutes < 480) {
+                alert("Morning attendance opens at 8:00 AM.");
+                return;
+            }
+
+            /* PHOTO CHECK */
+            const photoInput =
+                document.getElementById("morningPhoto");
+
+            if (!photoInput || !photoInput.files[0]) {
+                alert("Please take/select your photo first 📸");
+                return;
+            }
+
+            /* LOCATION CHECK */
+            if (
+                typeof morningCoords === "undefined" ||
+                !morningCoords
+            ) {
+                alert(
+                    "Please capture your current location first 📍"
+                );
+                return;
+            }
+
+            /* FIREBASE CHECK */
+            if (
+                typeof db === "undefined" ||
+                !db
+            ) {
+                alert(
+                    "Firebase connection not available. Please check internet."
+                );
+                return;
+            }
+
+            /* ATTENDANCE DATA */
+            const attendanceData = {
+
+                type: "Morning Attendance",
+
+                name: student.name,
+
+                roll: student.roll,
+
+                facility: student.facility,
+
+                date: todayKey(),
+
+                dateTime:
+                    now.toLocaleString("en-IN", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                        hour12: true
+                    }),
+
+                morningTime:
+                    now.toLocaleTimeString("en-IN", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                        hour12: true
+                    }),
+
+                latitude:
+                    morningCoords.latitude,
+
+                longitude:
+                    morningCoords.longitude,
+
+                morningStatus: "Completed",
+
+                photoName:
+                    photoInput.files[0].name
+            };
+
+
+            /* BUTTON */
+            const button =
+                document.getElementById("morningBtn");
+
+            if (button) {
+                button.disabled = true;
+                button.innerText =
+                    "⏳ Saving Attendance...";
+            }
+
+
+            /* FIREBASE SAVE */
+            const docId =
+                todayKey() + "_" + student.roll;
+
+            await db
+                .collection("attendance")
+                .doc(docId)
+                .set(
+                    attendanceData,
+                    { merge: true }
+                );
+
+
+            /* LOCAL BACKUP */
+            localStorage.setItem(
+                "anmMorning",
+                JSON.stringify(attendanceData)
+            );
+
+
+            /* SAVE PHOTO LOCALLY */
+            try {
+
+                const reader =
+                    new FileReader();
+
+                reader.onload = function (e) {
+
+                    localStorage.setItem(
+                        "anmMorningPhoto",
+                        e.target.result
+                    );
+
+                };
+
+                reader.readAsDataURL(
+                    photoInput.files[0]
+                );
+
+            } catch (photoError) {
+                console.log(
+                    "Photo backup error:",
+                    photoError
+                );
+            }
+
+
+            /* SUCCESS */
+            showStatus(
+                "morningStatus",
+                "success",
+                "✅ MORNING ATTENDANCE MARKED SUCCESSFULLY!"
+            );
+
+
+            if (button) {
+
+                button.disabled = true;
+
+                button.innerText =
+                    "✅ Morning Attendance Completed";
+
+            }
+
+
+            /* REFRESH TODAY ATTENDANCE */
+            if (
+                typeof loadTodayAttendanceFromFirebase ===
+                "function"
+            ) {
+
+                loadTodayAttendanceFromFirebase();
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Morning Attendance Error:",
+                error
+            );
+
+            const button =
+                document.getElementById("morningBtn");
+
+            if (button) {
+
+                button.disabled = false;
+
+                button.innerText =
+                    "✅ Mark Morning Attendance";
+
+            }
+
+            showStatus(
+                "morningStatus",
+                "error",
+                "❌ Attendance save nahi ho paayi. Internet check karein."
+            );
+
+        }
+
+    }
+
+
+    /* REPLACE BUTTON ACTION */
+    window.markMorningAttendance =
+        finalMarkMorningAttendance;
+
+
+    /* MAKE SURE BUTTON USES FINAL FUNCTION */
+    function attachFinalButton() {
+
+        const button =
+            document.getElementById("morningBtn");
+
+        if (!button) return;
+
+        button.onclick = function (event) {
+
+            event.preventDefault();
+
+            finalMarkMorningAttendance();
+
+        };
+
+    }
+
+
+    /* PAGE LOAD */
+    if (document.readyState === "loading") {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            attachFinalButton
+        );
+
+    } else {
+
+        attachFinalButton();
+
+    }
+
+
+    /* KEEP BUTTON STATUS UPDATED */
+    setTimeout(
+        attachFinalButton,
+        500
+    );
+
+})();
+</script>
+
+<!-- ===== FINAL MORNING ATTENDANCE FIX END ===== -->
