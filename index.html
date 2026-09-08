@@ -4254,6 +4254,60 @@ setTimeout(function(){
     setTimeout(arrangeFields, 1200);
     setTimeout(arrangeFields, 2000);
 
+})();/* ===== FINAL STUDENT DETAILS VERTICAL FIX ===== */
+(function () {
+
+    function fixStudentDetails() {
+
+        const name = document.getElementById("anmName");
+        const roll = document.getElementById("rollNumber");
+        const year = document.getElementById("anmYear");
+        const facility = document.getElementById("facility");
+
+        if (!name || !roll || !year || !facility) return;
+
+        [name, roll, year, facility].forEach(function (field) {
+
+            const parent = field.parentElement;
+
+            if (parent) {
+                parent.style.display = "block";
+                parent.style.width = "100%";
+                parent.style.margin = "0";
+                parent.style.padding = "0";
+            }
+
+            field.style.display = "block";
+            field.style.width = "100%";
+            field.style.marginBottom = "10px";
+        });
+    }
+
+    const style = document.createElement("style");
+
+    style.innerHTML = `
+        #anmName,
+        #rollNumber,
+        #anmYear,
+        #facility {
+            width:100% !important;
+            display:block !important;
+        }
+
+        #anmName,
+        #rollNumber,
+        #anmYear,
+        #facility {
+            margin-bottom:10px !important;
+        }
+    `;
+
+    document.head.appendChild(style);
+
+    setTimeout(fixStudentDetails, 300);
+    setTimeout(fixStudentDetails, 1000);
+    setTimeout(fixStudentDetails, 2000);
+
 })();
 </script>
 <style>
