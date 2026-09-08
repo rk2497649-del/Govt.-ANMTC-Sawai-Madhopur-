@@ -4199,6 +4199,61 @@ setTimeout(function(){
 
     document.head.appendChild(fixStyle);
 
+})();/* ===== FINAL VERTICAL STUDENT DETAILS FIX ===== */
+(function () {
+
+    const style = document.createElement("style");
+
+    style.textContent = `
+        #anmName,
+        #rollNumber,
+        #anmYear,
+        #facility {
+            width: 100% !important;
+            display: block !important;
+            margin-bottom: 10px !important;
+        }
+
+        #anmName,
+        #rollNumber,
+        #anmYear,
+        #facility {
+            min-height: 42px !important;
+        }
+    `;
+
+    document.head.appendChild(style);
+
+    function arrangeFields() {
+
+        const name = document.getElementById("anmName");
+        const roll = document.getElementById("rollNumber");
+        const year = document.getElementById("anmYear");
+        const facility = document.getElementById("facility");
+
+        if (!name || !roll || !year || !facility) return;
+
+        const fields = [name, roll, year, facility];
+
+        fields.forEach(function (field) {
+
+            const parent = field.parentElement;
+
+            if (!parent) return;
+
+            parent.style.display = "block";
+            parent.style.width = "100%";
+            parent.style.marginBottom = "10px";
+
+            field.style.width = "100%";
+            field.style.display = "block";
+        });
+    }
+
+    setTimeout(arrangeFields, 500);
+    setTimeout(arrangeFields, 1200);
+    setTimeout(arrangeFields, 2000);
+
 })();
 </script>
 <style>
