@@ -1272,3 +1272,702 @@ function displayTodayAttendance(){
                     🏥 Facility: ${data.facility}<br>
 
                     <span class="badge badge-g
+<script>
+/* =========================================================
+   FINAL FIX - ANM ATTENDANCE
+   Sawai Madhopur CITY FACILITIES ONLY
+   Paste this block just before the final </script>
+   ========================================================= */
+
+/* ---------- YEAR FIELD ---------- */
+
+(function addYearField(){
+
+    const roll = document.getElementById("rollNumber");
+    const facility = document.getElementById("facility");
+
+    if(!roll || !facility) return;
+
+    if(!document.getElementById("studentYear")){
+
+        const yearBox = document.createElement("div");
+        yearBox.className = "input-group";
+
+        yearBox.innerHTML = `
+            <label>Year</label>
+            <select id="studentYear">
+                <option value="">Select Year</option>
+                <option value="1st Year">1st Year</option>
+                <option value="2nd Year">2nd Year</option>
+            </select>
+        `;
+
+        facility.parentElement.parentElement.insertBefore(
+            yearBox,
+            facility.parentElement
+        );
+    }
+
+})();
+
+
+/* ---------- SAWAI MADHOPUR CITY FACILITIES ONLY ---------- */
+
+(function loadCityFacilities(){
+
+    const facility = document.getElementById("facility");
+
+    if(!facility) return;
+
+    facility.innerHTML = `
+        <option value="">Select Facility</option>
+
+        <option value="General Hospital Sawai Madhopur">
+            General Hospital Sawai Madhopur
+        </option>
+
+        <option value="Government Medical College Teaching Hospital Sawai Madhopur">
+            Government Medical College Teaching Hospital Sawai Madhopur
+        </option>
+
+        <option value="Urban PHC Bazariya Sawai Madhopur">
+            Urban PHC Bazariya Sawai Madhopur
+        </option>
+
+        <option value="Urban PHC Mantown Sawai Madhopur">
+            Urban PHC Mantown Sawai Madhopur
+        </option>
+
+        <option value="PHC Urban Sawai Madhopur">
+            PHC Urban Sawai Madhopur
+        </option>
+
+        <option value="TB Clinic Sawai Madhopur">
+            TB Clinic Sawai Madhopur
+        </option>
+    `;
+
+})();
+
+
+/* ---------- STUDENT DETAILS ---------- */
+
+function getStudentDetails(){
+
+    return {
+        name:
+            document.getElementById("anmName")?.value.trim() || "",
+
+        roll:
+            document.getElementById("rollNumber")?.value.trim() || "",
+
+        year:
+            document.getElementById("studentYear")?.value || "",
+
+        facility:
+            document.getElementById("facility")?.value || ""
+    };
+}
+
+
+/* ---------- VALIDATION ---------- */
+
+function validateStudent(){
+
+    const student = getStudentDetails();
+
+    if(!student.name){
+        alert("Please enter ANM Name.");
+        document.getElementById("anmName")?.focus();
+        return false;
+    }
+
+    if(!student.roll){
+        alert("Please enter Roll Number.");
+        document.getElementById("rollNumber")?.focus();
+        return false;
+    }
+
+    if(!student.year){
+        alert("Please select Year.");
+        document.getElementById("studentYear")?.focus();
+        return false;
+    }
+
+    if(!student.facility){
+        alert("Please select Facility.");
+        document.getElementById("facility")?.focus();
+        return false;
+    }
+
+    return true;
+}
+
+
+/* ---------- DATE & TIME ---------- */
+
+function getISTDate(){
+
+    return new Date(
+        new Date().toLocaleString(
+            "en-US",
+            { timeZone:"Asia/Kolkata" }
+        )
+    );
+
+}
+
+
+function updateDateTime(){
+
+    const now = getISTDate();
+
+    const date =
+        String(now.getDate()).padStart(2,"0") +
+        "/" +
+        String(now.getMonth()+1).padStart(2,"0") +
+        "/" +
+        now.getFullYear();
+
+    const time =
+        String(now.getHours()).padStart(2,"0") +
+        ":" +
+        String(now.getMinutes()).padStart(2,"0") +
+        ":" +
+        String(now.getSeconds()).padStart(2,"0");
+
+    const dateBox = document.getElementById("currentDate");
+    const timeBox = document.getElementById("currentTime");
+
+    if(dateBox) dateBox.textContent = date;
+    if(timeBox) timeBox.textContent = time;
+
+}
+
+
+/* Start clock immediately */
+updateDateTime();
+
+/* Keep clock running */
+setInterval(updateDateTime,1000);
+
+
+/* ---------- PHOTO PREVIEW ---------- */
+
+function setupPhotoPreview(inputId){
+
+    const input = document.getElementById(inputId);
+
+    if(!input) return;
+
+    input.addEventListener("change",function(){
+
+        if(!this.files || !this.files[0]) return;
+
+        const oldPreview =
+            document.getElementById(inputId + "_preview");
+
+        if(oldPreview) oldPreview.remove();
+
+        const img = document.createElement("img");
+
+        img.id = inputId + "_preview";
+
+        img.src = URL.createObjectURL(this.files[0]);
+
+        img.style.width = "100%";
+        img.style.maxWidth = "320px";
+        img.style.height = "220px";
+        img.style.objectFit = "cover";
+        img.style.borderRadius = "15px";
+        img.style.marginTop = "10px";
+        img.style.display = "block";
+
+        this.parentElement.appendChild(img);
+
+    });
+
+}
+
+setupPhotoPreview("morningPhoto");
+setupPhotoPreview("afternoonPhoto");
+
+
+/* ---------- LOCATION ---------- */
+
+let morningLocationData = null;
+let afternoonLocationData = null;
+
+
+async function findPlaceName(lat,lon){
+
+    try{
+
+        const url =
+            "https://nominatim.openstreetmap.org/reverse" +
+            "?format=json" +
+            "&lat=" + encodeURIComponent(lat) +
+            "&lon=" + encodeURIComponent(lon) +
+            "&zoom=18" +
+            "&addressdetails=1";
+
+        const response = await fetch(url,{
+            headers:{
+                "Accept":"application/json"
+            }
+        });
+
+        if(!response.ok){
+            throw new Error("Location lookup failed");
+        }
+
+        const data = await response.json();
+
+        if(data.display_name){
+            return data.display_name;
+        }
+
+    }catch(error){
+
+        console.log("Place name error:",error);
+
+    }
+
+    return "Place name not available";
+}
+
+
+/* ---------- MORNING LOCATION ---------- */
+
+async function getMorningLocation(){
+
+    const box = document.getElementById("morningLocation");
+
+    if(box){
+        box.innerHTML = "📍 Getting location...";
+    }
+
+    if(!navigator.geolocation){
+
+        if(box){
+            box.innerHTML = "❌ Location not supported";
+        }
+
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+
+        async function(position){
+
+            const lat =
+                position.coords.latitude;
+
+            const lon =
+                position.coords.longitude;
+
+            const accuracy =
+                Math.round(position.coords.accuracy);
+
+            const place =
+                await findPlaceName(lat,lon);
+
+            morningLocationData = {
+                latitude:lat,
+                longitude:lon,
+                accuracy:accuracy,
+                place:place
+            };
+
+            if(box){
+
+                box.innerHTML =
+                    "📍 <b>" + place + "</b><br>" +
+                    "Accuracy: " + accuracy + " m";
+
+            }
+
+            updateAttendanceButtons();
+
+        },
+
+        function(error){
+
+            console.log(error);
+
+            if(box){
+
+                box.innerHTML =
+                    "❌ Location permission denied / unavailable";
+
+            }
+
+            morningLocationData = null;
+
+            updateAttendanceButtons();
+
+        },
+
+        {
+            enableHighAccuracy:true,
+            timeout:15000,
+            maximumAge:0
+        }
+
+    );
+
+}
+
+
+/* ---------- AFTERNOON LOCATION ---------- */
+
+async function getAfternoonLocation(){
+
+    const box = document.getElementById("afternoonLocation");
+
+    if(box){
+        box.innerHTML = "📍 Getting location...";
+    }
+
+    if(!navigator.geolocation){
+
+        if(box){
+            box.innerHTML = "❌ Location not supported";
+        }
+
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+
+        async function(position){
+
+            const lat =
+                position.coords.latitude;
+
+            const lon =
+                position.coords.longitude;
+
+            const accuracy =
+                Math.round(position.coords.accuracy);
+
+            const place =
+                await findPlaceName(lat,lon);
+
+            afternoonLocationData = {
+                latitude:lat,
+                longitude:lon,
+                accuracy:accuracy,
+                place:place
+            };
+
+            if(box){
+
+                box.innerHTML =
+                    "📍 <b>" + place + "</b><br>" +
+                    "Accuracy: " + accuracy + " m";
+
+            }
+
+            updateAttendanceButtons();
+
+        },
+
+        function(error){
+
+            console.log(error);
+
+            if(box){
+
+                box.innerHTML =
+                    "❌ Location permission denied / unavailable";
+
+            }
+
+            afternoonLocationData = null;
+
+            updateAttendanceButtons();
+
+        },
+
+        {
+            enableHighAccuracy:true,
+            timeout:15000,
+            maximumAge:0
+        }
+
+    );
+
+}
+
+
+/* ---------- BUTTON CONTROL ---------- */
+
+function updateAttendanceButtons(){
+
+    const morningBtn =
+        document.getElementById("morningBtn");
+
+    const afternoonBtn =
+        document.getElementById("afternoonBtn");
+
+    const morningPhoto =
+        document.getElementById("morningPhoto");
+
+    const afternoonPhoto =
+        document.getElementById("afternoonPhoto");
+
+
+    if(morningBtn){
+
+        morningBtn.disabled =
+            !validateStudentSilent() ||
+            !morningLocationData ||
+            !morningPhoto ||
+            !morningPhoto.files ||
+            !morningPhoto.files[0];
+
+    }
+
+
+    if(afternoonBtn){
+
+        afternoonBtn.disabled =
+            !validateStudentSilent() ||
+            !afternoonLocationData ||
+            !afternoonPhoto ||
+            !afternoonPhoto.files ||
+            !afternoonPhoto.files[0];
+
+    }
+
+}
+
+
+/* Silent validation for buttons */
+
+function validateStudentSilent(){
+
+    const s = getStudentDetails();
+
+    return !!(
+        s.name &&
+        s.roll &&
+        s.year &&
+        s.facility
+    );
+
+}
+
+
+/* ---------- LISTENERS ---------- */
+
+["anmName","rollNumber","studentYear","facility"].forEach(function(id){
+
+    const el = document.getElementById(id);
+
+    if(el){
+
+        el.addEventListener("input",updateAttendanceButtons);
+        el.addEventListener("change",updateAttendanceButtons);
+
+    }
+
+});
+
+
+["morningPhoto","afternoonPhoto"].forEach(function(id){
+
+    const el = document.getElementById(id);
+
+    if(el){
+
+        el.addEventListener("change",updateAttendanceButtons);
+
+    }
+
+});
+
+
+/* ---------- MORNING ATTENDANCE ---------- */
+
+function markMorningAttendance(){
+
+    if(!validateStudent()){
+        return;
+    }
+
+    const photo =
+        document.getElementById("morningPhoto");
+
+    if(!photo || !photo.files || !photo.files[0]){
+
+        alert("Please capture/select morning photo.");
+        return;
+
+    }
+
+    if(!morningLocationData){
+
+        alert("Please get morning location first.");
+        return;
+
+    }
+
+    const student = getStudentDetails();
+
+    const now = getISTDate();
+
+    const record = {
+
+        name:student.name,
+        roll:student.roll,
+        year:student.year,
+        facility:student.facility,
+
+        date:
+            now.toLocaleDateString("en-GB"),
+
+        time:
+            now.toLocaleTimeString("en-IN"),
+
+        photo:
+            photo.files[0].name,
+
+        location:
+            morningLocationData
+
+    };
+
+
+    localStorage.setItem(
+        "anmMorning",
+        JSON.stringify(record)
+    );
+
+
+    const status =
+        document.getElementById("morningStatus");
+
+    if(status){
+
+        status.innerHTML =
+            "✅ Morning attendance recorded successfully";
+
+    }
+
+    alert("✅ Morning attendance recorded successfully!");
+
+    if(typeof displayTodayAttendance === "function"){
+        displayTodayAttendance();
+    }
+
+}
+
+
+/* ---------- AFTERNOON ATTENDANCE ---------- */
+
+function markAfternoonAttendance(){
+
+    if(!validateStudent()){
+        return;
+    }
+
+    const photo =
+        document.getElementById("afternoonPhoto");
+
+    if(!photo || !photo.files || !photo.files[0]){
+
+        alert("Please capture/select afternoon photo.");
+        return;
+
+    }
+
+    if(!afternoonLocationData){
+
+        alert("Please get afternoon location first.");
+        return;
+
+    }
+
+    const student = getStudentDetails();
+
+    const now = getISTDate();
+
+    const record = {
+
+        name:student.name,
+        roll:student.roll,
+        year:student.year,
+        facility:student.facility,
+
+        date:
+            now.toLocaleDateString("en-GB"),
+
+        time:
+            now.toLocaleTimeString("en-IN"),
+
+        photo:
+            photo.files[0].name,
+
+        location:
+            afternoonLocationData
+
+    };
+
+
+    localStorage.setItem(
+        "anmAfternoon",
+        JSON.stringify(record)
+    );
+
+
+    const status =
+        document.getElementById("afternoonStatus");
+
+    if(status){
+
+        status.innerHTML =
+            "✅ Afternoon attendance recorded successfully";
+
+    }
+
+    alert("✅ Afternoon attendance recorded successfully!");
+
+    if(typeof displayTodayAttendance === "function"){
+        displayTodayAttendance();
+    }
+
+}
+
+
+/* ---------- INITIAL BUTTON UPDATE ---------- */
+
+setTimeout(function(){
+
+    updateAttendanceButtons();
+
+},500);
+
+
+/* ---------- MAKE EXISTING FUNCTIONS WORK ---------- */
+
+window.getMorningLocation =
+    getMorningLocation;
+
+window.getAfternoonLocation =
+    getAfternoonLocation;
+
+window.markMorningAttendance =
+    markMorningAttendance;
+
+window.markAfternoonAttendance =
+    markAfternoonAttendance;
+
+window.updateAttendanceButtons =
+    updateAttendanceButtons;
+
+window.updateButtons =
+    updateAttendanceButtons;
+
+</script>
