@@ -7788,3 +7788,47 @@ document.addEventListener("DOMContentLoaded", function () {
 <!-- ============================================================
      END FINAL WORKING MORNING ATTENDANCE FIX
 ============================================================ -->
+<!-- ============================================================
+     🔐 ADMIN PASSWORD PROTECTION - ATTENDANCE HISTORY
+     PASSWORD: 8949100258
+============================================================ -->
+
+<script>
+(function () {
+
+    const ADMIN_PASSWORD = "8949100258";
+
+    // Existing Attendance History function ko protect karo
+    const oldOpenHistory = window.openHistory;
+
+    window.openHistory = function () {
+
+        const enteredPassword = prompt(
+            "🔐 ADMIN ACCESS\n\nAttendance History kholne ke liye Admin Password enter karein:"
+        );
+
+        // Cancel
+        if (enteredPassword === null) {
+            return false;
+        }
+
+        // Correct password
+        if (enteredPassword === ADMIN_PASSWORD) {
+
+            if (typeof oldOpenHistory === "function") {
+                oldOpenHistory();
+            } else {
+                alert("Attendance History function nahi mila.");
+            }
+
+            return true;
+        }
+
+        // Wrong password
+        alert("❌ WRONG PASSWORD\n\nAttendance History sirf Admin ke liye hai.");
+
+        return false;
+    };
+
+})();
+</script>
