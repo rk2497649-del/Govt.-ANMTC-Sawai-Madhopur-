@@ -4659,3 +4659,122 @@ button[onclick*="Attendance History"] {
     }
 }
 </style>
+<style>
+/* ============================================================
+   FINAL REAL FIX
+   TODAY + HISTORY = COMPLETELY SEPARATE
+============================================================ */
+
+/* EXTRA WATERY HISTORY BUTTON HIDE */
+.watery-history-btn,
+#wateryHistoryButton {
+    display: none !important;
+}
+
+
+/* ================================
+   TODAY'S ATTENDANCE
+================================ */
+
+.watery-today-floating {
+    position: fixed !important;
+
+    right: 16px !important;
+    bottom: 105px !important;
+
+    width: auto !important;
+    min-width: 175px !important;
+    max-width: 90vw !important;
+
+    margin: 0 !important;
+    padding: 13px 20px !important;
+
+    display: block !important;
+
+    background: linear-gradient(
+        135deg,
+        #ff4f9a,
+        #ff77b7
+    ) !important;
+
+    color: #ffffff !important;
+
+    border: 2px solid rgba(255,255,255,.75) !important;
+    border-radius: 30px !important;
+
+    box-shadow:
+        0 8px 25px rgba(255,79,154,.35) !important;
+
+    z-index: 999999 !important;
+
+    font-size: 13px !important;
+    font-weight: 900 !important;
+
+    cursor: pointer !important;
+}
+
+
+/* ================================
+   ATTENDANCE HISTORY
+================================ */
+
+.history-button {
+    position: fixed !important;
+
+    right: 16px !important;
+    bottom: 20px !important;
+
+    width: auto !important;
+    min-width: 175px !important;
+    max-width: 90vw !important;
+
+    margin: 0 !important;
+    padding: 13px 20px !important;
+
+    display: block !important;
+
+    z-index: 999998 !important;
+
+    border-radius: 30px !important;
+
+    background: linear-gradient(
+        135deg,
+        #9c1450,
+        #d81b60
+    ) !important;
+
+    color: white !important;
+
+    box-shadow:
+        0 8px 25px rgba(156,20,80,.35) !important;
+}
+
+
+/* ================================
+   MOBILE
+================================ */
+
+@media (max-width:600px) {
+
+    .watery-today-floating {
+        right: 10px !important;
+        bottom: 105px !important;
+
+        min-width: 165px !important;
+
+        padding: 11px 16px !important;
+        font-size: 12px !important;
+    }
+
+    .history-button {
+        right: 10px !important;
+        bottom: 15px !important;
+
+        min-width: 165px !important;
+
+        padding: 11px 16px !important;
+        font-size: 12px !important;
+    }
+
+}
+</style>
