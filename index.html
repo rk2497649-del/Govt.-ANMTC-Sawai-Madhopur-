@@ -5999,3 +5999,467 @@ document.addEventListener("DOMContentLoaded", function () {
 <!-- ============================================================
      END OF PHOTO SAVE FIX
 ============================================================ -->
+<!-- ============================================================
+     FINAL PHOTO SAVE + MORNING ATTENDANCE FIX
+     PASTE THIS AT THE VERY END
+============================================================ -->
+
+<script>
+(function () {
+
+    async function FINAL_MORNING_ATTENDANCE() {
+
+        const button = document.getElementById("morningBtn");
+
+        try {
+
+            /* ===============================
+               STUDENT DETAILS
+            =============================== */
+
+            const student = getStudentDetails();
+
+            if (!student.name) {
+                alert("Please enter ANM Name.");
+                return;
+            }
+
+            if (!student.roll) {
+                alert("Please enter Roll Number.");
+                return;
+            }
+
+            if (!student.year) {
+                alert("Please select Year.");
+                return;
+            }
+
+            if (!student.facility) {
+                alert("Please select Hospital / Facility.");
+                return;
+            }
+
+
+            /* ===============================
+               TIME CHECK
+            =============================== */
+
+            const now = new Date();
+
+            const indiaTime =
+                new Intl.DateTimeFormat("en-IN", {
+                    timeZone: "Asia/Kolkata",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false
+                }).formatToParts(now);
+
+            const indiaHour =
+                parseInt(
+                    indiaTime.find(x => x.type === "hour").value
+                );
+
+            const indiaMinute =
+                parseInt(
+                    indiaTime.find(x => x.type === "minute").value
+                );
+
+            const totalMinutes =
+                indiaHour * 60 + indiaMinute;
+
+            if (totalMinutes < 480) {
+                alert("Morning attendance opens at 8:00 AM.");
+                return;
+            }
+
+
+            /* ===============================
+               PHOTO CHECK
+            =============================== */
+
+            const photoInput =
+                document.getElementById("morningPhoto");
+
+            if (
+                !photoInput ||
+                !photoInput.files ||
+                !photoInput.files[0]
+            ) {
+                alert("Please take/select your photo first 📸");
+                return;
+            }
+
+            const photo =
+                photoInput.files[0];
+
+
+            /* ===============================
+               LOCATION CHECK
+            =============================== */
+
+            if (!morningCoords) {
+                alert(
+                    "Please capture your current location first 📍"
+                );
+                return;
+            }
+
+
+            /* ===============================
+               BUTTON
+            =============================== */
+
+            if (button) {
+                button.disabled = true;
+                button.innerText =
+                    "⏳ UPLOADING PHOTO & SAVING...";
+            }
+
+            const progress =
+                document.getElementById("morningProgress");
+
+            if (progress) {
+                progress.style.display = "block";
+            }
+
+
+            /* ===============================
+               FIND TODAY'S RECORD
+            =============================== */
+
+            const today =
+                todayKey();
+
+            const existingSnapshot =
+                await db
+                    .collection("attendance")
+                    .where("date", "==", today)
+                    .where("roll", "==", student.roll)
+                    .where("type", "==", "Morning Attendance")
+                    .limit(1)
+                    .get();
+
+
+            /* ===============================
+               UPLOAD PHOTO TO FIREBASE STORAGE
+            =============================== */
+
+            const photoData =
+                await uploadPhoto(
+                    photo,
+                    "morning",
+                    student
+                );
+
+
+            if (
+                !photoData ||
+                !photoData.url
+            ) {
+                throw new Error(
+                    "Photo upload failed."
+                );
+            }
+
+
+            /* ===============================
+               FINAL FIRESTORE DATA
+            =============================== */
+
+            const attendanceData = {
+
+                type:
+                    "Morning Attendance",
+
+                name:
+                    student.name,
+
+                roll:
+                    student.roll,
+
+                year:
+                    student.year,
+
+                facility:
+                    student.facility,
+
+                date:
+                    today,
+
+                dateTime:
+                    getIndiaDateTime(),
+
+                morningTime:
+                    getIndiaDateTime(),
+
+                location:
+                    morningCoords.place ||
+                    "Location captured",
+
+                latitude:
+                    morningCoords.latitude,
+
+                longitude:
+                    morningCoords.longitude,
+
+                morningStatus:
+                    "Completed",
+
+                /* VERY IMPORTANT */
+                photoURL:
+                    photoData.url,
+
+                photoPath:
+                    photoData.path,
+
+                photoName:
+                    photo.name,
+
+                createdAt:
+                    firebase.firestore.FieldValue.serverTimestamp()
+
+            };
+
+
+            /* ===============================
+               SAVE / UPDATE FIRESTORE
+            =============================== */
+
+            if (!existingSnapshot.empty) {
+
+                /*
+                   If today's record already exists
+                   without photo, update it.
+                */
+
+                const existingDoc =
+                    existingSnapshot.docs[0];
+
+                await db
+                    .collection("attendance")
+                    .doc(existingDoc.id)
+                    .set(
+                        attendanceData,
+                        { merge: true }
+                    );
+
+            } else {
+
+                /*
+                   New attendance record
+                */
+
+                await db
+                    .collection("attendance")
+                    .add(
+                        attendanceData
+                    );
+
+            }
+
+
+            /* ===============================
+               LOCAL BACKUP
+            =============================== */
+
+            try {
+
+                localStorage.setItem(
+                    "anmMorning",
+                    JSON.stringify(
+                        attendanceData
+                    )
+                );
+
+                const reader =
+                    new FileReader();
+
+                reader.onload =
+                    function (e) {
+
+                        try {
+
+                            localStorage.setItem(
+                                "anmMorningPhoto",
+                                e.target.result
+                            );
+
+                        } catch (e) {
+                            console.log(
+                                "Local photo backup skipped"
+                            );
+                        }
+
+                    };
+
+                reader.readAsDataURL(photo);
+
+            } catch (localError) {
+
+                console.log(
+                    "Local backup error:",
+                    localError
+                );
+
+            }
+
+
+            /* ===============================
+               SUCCESS
+            =============================== */
+
+            showStatus(
+                "morningStatus",
+                "success",
+                "✅ MORNING ATTENDANCE + PHOTO SAVED SUCCESSFULLY!"
+            );
+
+
+            if (button) {
+
+                button.disabled = true;
+
+                button.innerText =
+                    "✅ Morning Attendance Completed";
+
+            }
+
+
+            const progressBar =
+                document.getElementById(
+                    "morningProgressBar"
+                );
+
+            if (progressBar) {
+                progressBar.style.width = "100%";
+            }
+
+
+            /* ===============================
+               RELOAD TODAY'S ATTENDANCE
+            =============================== */
+
+            await loadTodayAttendance();
+
+
+            /* ===============================
+               RELOAD HISTORY DATA
+            =============================== */
+
+            if (
+                typeof loadHistory === "function"
+            ) {
+
+                const historyDate =
+                    document.getElementById(
+                        "historyDate"
+                    );
+
+                if (
+                    historyDate &&
+                    historyDate.value === today
+                ) {
+                    await loadHistory();
+                }
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "FINAL PHOTO ATTENDANCE ERROR:",
+                error
+            );
+
+            if (button) {
+
+                button.disabled = false;
+
+                button.innerText =
+                    "✅ Mark Morning Attendance";
+
+            }
+
+            showStatus(
+                "morningStatus",
+                "error",
+                "❌ Attendance/Photo save nahi ho paayi. " +
+                (error.message || "Please try again.")
+            );
+
+        }
+
+    }
+
+
+    /* ============================================================
+       OVERRIDE OLD FUNCTION
+    ============================================================ */
+
+    window.markMorningAttendance =
+        FINAL_MORNING_ATTENDANCE;
+
+
+    /* ============================================================
+       OVERRIDE BUTTON
+    ============================================================ */
+
+    function attachFinalPhotoButton() {
+
+        const button =
+            document.getElementById(
+                "morningBtn"
+            );
+
+        if (!button) return;
+
+        button.onclick =
+            function (event) {
+
+                event.preventDefault();
+
+                event.stopPropagation();
+
+                FINAL_MORNING_ATTENDANCE();
+
+            };
+
+    }
+
+
+    /* ============================================================
+       PAGE LOAD
+    ============================================================ */
+
+    if (
+        document.readyState === "loading"
+    ) {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            attachFinalPhotoButton
+        );
+
+    } else {
+
+        attachFinalPhotoButton();
+
+    }
+
+
+    setTimeout(
+        attachFinalPhotoButton,
+        500
+    );
+
+    setTimeout(
+        attachFinalPhotoButton,
+        1500
+    );
+
+})();
+</script>
+
+<!-- ============================================================
+     END FINAL PHOTO SAVE FIX
+============================================================ -->
