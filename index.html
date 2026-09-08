@@ -3724,3 +3724,524 @@ document.addEventListener("DOMContentLoaded", function () {
 <!-- =========================================================
      END FINAL PHOTO FIX
 ========================================================= -->
+<!-- =========================================================
+     PREMIUM WATERY FLOATING ATTENDANCE BUTTONS
+     PASTE AT THE VERY END
+========================================================= -->
+
+<style>
+
+    /* ===== FLOATING ATTENDANCE BUTTON AREA ===== */
+
+    .watery-attendance-buttons{
+        position:fixed;
+        right:16px;
+        bottom:18px;
+        z-index:99999;
+        display:flex;
+        flex-direction:column;
+        gap:10px;
+        align-items:flex-end;
+    }
+
+    .watery-attendance-btn{
+        border:1px solid rgba(255,255,255,0.45);
+        background:rgba(255,255,255,0.22);
+        backdrop-filter:blur(12px);
+        -webkit-backdrop-filter:blur(12px);
+        color:#123;
+        padding:11px 18px;
+        border-radius:30px;
+        font-size:13px;
+        font-weight:800;
+        letter-spacing:.5px;
+        box-shadow:
+            0 8px 25px rgba(0,0,0,.14),
+            inset 0 1px 0 rgba(255,255,255,.6);
+        cursor:pointer;
+        transition:.25s ease;
+        text-shadow:0 1px 2px rgba(255,255,255,.8);
+    }
+
+    .watery-attendance-btn:hover{
+        transform:translateY(-3px) scale(1.02);
+        background:rgba(255,255,255,0.32);
+        box-shadow:
+            0 12px 30px rgba(0,0,0,.18),
+            inset 0 1px 0 rgba(255,255,255,.75);
+    }
+
+    .watery-attendance-btn:active{
+        transform:scale(.96);
+    }
+
+    /* ===== TODAY BUTTON ===== */
+
+    .watery-today-btn{
+        background:rgba(72,190,190,.30);
+        border-color:rgba(255,255,255,.55);
+    }
+
+    /* ===== HISTORY BUTTON ===== */
+
+    .watery-history-btn{
+        background:rgba(120,170,210,.27);
+        border-color:rgba(255,255,255,.55);
+    }
+
+
+    /* ===== POPUP ===== */
+
+    .watery-attendance-overlay{
+        position:fixed;
+        inset:0;
+        z-index:99998;
+        background:rgba(0,0,0,.18);
+        backdrop-filter:blur(4px);
+        -webkit-backdrop-filter:blur(4px);
+        display:none;
+        align-items:center;
+        justify-content:center;
+        padding:15px;
+    }
+
+    .watery-attendance-overlay.show{
+        display:flex;
+    }
+
+    .watery-attendance-popup{
+        width:min(95%,900px);
+        max-height:85vh;
+        overflow:auto;
+        background:rgba(255,255,255,.72);
+        backdrop-filter:blur(18px);
+        -webkit-backdrop-filter:blur(18px);
+        border:1px solid rgba(255,255,255,.65);
+        border-radius:24px;
+        padding:18px;
+        box-shadow:0 20px 60px rgba(0,0,0,.22);
+        animation:waterPopup .25s ease;
+    }
+
+    @keyframes waterPopup{
+        from{
+            opacity:0;
+            transform:translateY(20px) scale(.96);
+        }
+        to{
+            opacity:1;
+            transform:translateY(0) scale(1);
+        }
+    }
+
+    .watery-popup-header{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:14px;
+    }
+
+    .watery-popup-title{
+        font-size:18px;
+        font-weight:900;
+        letter-spacing:.5px;
+    }
+
+    .watery-close{
+        width:36px;
+        height:36px;
+        border:0;
+        border-radius:50%;
+        background:rgba(255,255,255,.45);
+        font-size:20px;
+        cursor:pointer;
+    }
+
+
+    /* ===== MOBILE ===== */
+
+    @media(max-width:600px){
+
+        .watery-attendance-buttons{
+            right:10px;
+            bottom:12px;
+            gap:7px;
+        }
+
+        .watery-attendance-btn{
+            padding:9px 14px;
+            font-size:11px;
+        }
+
+        .watery-attendance-popup{
+            max-height:88vh;
+            padding:13px;
+            border-radius:20px;
+        }
+
+        .watery-popup-title{
+            font-size:15px;
+        }
+
+    }
+
+</style>
+
+
+<script>
+
+(function(){
+
+    /* =====================================================
+       CREATE FLOATING BUTTONS
+    ===================================================== */
+
+    function createWateryButtons(){
+
+        if(document.querySelector(".watery-attendance-buttons")){
+            return;
+        }
+
+        const box = document.createElement("div");
+
+        box.className = "watery-attendance-buttons";
+
+        box.innerHTML = `
+
+            <button
+                class="watery-attendance-btn watery-history-btn"
+                id="wateryHistoryButton">
+                📚 ATTENDANCE HISTORY
+            </button>
+
+            <button
+                class="watery-attendance-btn watery-today-btn"
+                id="wateryTodayButton">
+                📋 TODAY ATTENDANCE
+            </button>
+
+        `;
+
+        document.body.appendChild(box);
+
+
+        /* =================================================
+           POPUP
+        ================================================= */
+
+        const overlay = document.createElement("div");
+
+        overlay.className =
+            "watery-attendance-overlay";
+
+        overlay.id =
+            "wateryAttendanceOverlay";
+
+        overlay.innerHTML = `
+
+            <div class="watery-attendance-popup">
+
+                <div class="watery-popup-header">
+
+                    <div class="watery-popup-title"
+                         id="wateryPopupTitle">
+                        📋 TODAY ATTENDANCE
+                    </div>
+
+                    <button
+                        class="watery-close"
+                        id="wateryCloseButton">
+                        ✕
+                    </button>
+
+                </div>
+
+                <div id="wateryPopupContent"></div>
+
+            </div>
+
+        `;
+
+        document.body.appendChild(overlay);
+
+
+        /* =================================================
+           TODAY ATTENDANCE
+        ================================================= */
+
+        document
+        .getElementById("wateryTodayButton")
+        .addEventListener("click",function(){
+
+            const popup =
+                document.getElementById(
+                    "wateryAttendanceOverlay"
+                );
+
+            const content =
+                document.getElementById(
+                    "wateryPopupContent"
+                );
+
+            document.getElementById(
+                "wateryPopupTitle"
+            ).innerHTML =
+                "📋 TODAY ATTENDANCE";
+
+            /*
+              Existing Today Attendance section
+              ko popup me dikhane ki koshish
+            */
+
+            const selectors = [
+                "#todayAttendance",
+                "#today-attendance",
+                ".today-attendance",
+                "[id*='todayAttendance']",
+                "[class*='today-attendance']"
+            ];
+
+            let source = null;
+
+            for(
+                let i=0;
+                i<selectors.length;
+                i++
+            ){
+
+                source =
+                    document.querySelector(
+                        selectors[i]
+                    );
+
+                if(source){
+                    break;
+                }
+
+            }
+
+
+            if(source){
+
+                content.innerHTML =
+                    source.innerHTML;
+
+            }else{
+
+                /*
+                  Agar existing section ka ID
+                  different ho to bhi attendance
+                  reload ho jayegi.
+                */
+
+                content.innerHTML = `
+                    <div style="
+                        text-align:center;
+                        padding:25px;
+                        font-weight:700;
+                    ">
+                        Loading today's attendance...
+                    </div>
+                `;
+
+                if(
+                    typeof loadTodayAttendance ===
+                    "function"
+                ){
+
+                    try{
+                        loadTodayAttendance();
+                    }catch(e){}
+
+                    setTimeout(function(){
+
+                        const possible =
+                            document.querySelector(
+                                ".attendance-row"
+                            );
+
+                        if(possible){
+
+                            content.innerHTML =
+                                possible.parentElement
+                                ? possible.parentElement.innerHTML
+                                : possible.outerHTML;
+
+                        }
+
+                    },900);
+
+                }
+
+            }
+
+            popup.classList.add("show");
+
+        });
+
+
+        /* =================================================
+           ATTENDANCE HISTORY
+        ================================================= */
+
+        document
+        .getElementById("wateryHistoryButton")
+        .addEventListener("click",function(){
+
+            const popup =
+                document.getElementById(
+                    "wateryAttendanceOverlay"
+                );
+
+            const content =
+                document.getElementById(
+                    "wateryPopupContent"
+                );
+
+            document.getElementById(
+                "wateryPopupTitle"
+            ).innerHTML =
+                "📚 ATTENDANCE HISTORY";
+
+
+            /*
+              Existing history section ko
+              automatically find karega.
+            */
+
+            const selectors = [
+                "#attendanceHistory",
+                "#attendance-history",
+                ".attendance-history",
+                "[id*='attendanceHistory']",
+                "[class*='attendance-history']"
+            ];
+
+            let source = null;
+
+            for(
+                let i=0;
+                i<selectors.length;
+                i++
+            ){
+
+                source =
+                    document.querySelector(
+                        selectors[i]
+                    );
+
+                if(source){
+                    break;
+                }
+
+            }
+
+
+            if(source){
+
+                content.innerHTML =
+                    source.innerHTML;
+
+            }else{
+
+                content.innerHTML = `
+                    <div style="
+                        text-align:center;
+                        padding:25px;
+                        font-weight:700;
+                    ">
+                        Attendance history available
+                        in the existing section.
+                    </div>
+                `;
+
+            }
+
+            popup.classList.add("show");
+
+        });
+
+
+        /* =================================================
+           CLOSE
+        ================================================= */
+
+        document
+        .getElementById("wateryCloseButton")
+        .addEventListener("click",function(){
+
+            document
+            .getElementById(
+                "wateryAttendanceOverlay"
+            )
+            .classList.remove("show");
+
+        });
+
+
+        /* =================================================
+           CLICK OUTSIDE
+        ================================================= */
+
+        overlay.addEventListener(
+            "click",
+            function(e){
+
+                if(e.target === overlay){
+
+                    overlay.classList.remove(
+                        "show"
+                    );
+
+                }
+
+            }
+        );
+
+
+        /* =================================================
+           ESC KEY
+        ================================================= */
+
+        document.addEventListener(
+            "keydown",
+            function(e){
+
+                if(e.key === "Escape"){
+
+                    overlay.classList.remove(
+                        "show"
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       START
+    ===================================================== */
+
+    if(document.readyState === "loading"){
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            createWateryButtons
+        );
+
+    }else{
+
+        createWateryButtons();
+
+    }
+
+})();
+
+</script>
+
+<!-- =========================================================
+     END WATERY FLOATING ATTENDANCE DESIGN
+========================================================= -->
