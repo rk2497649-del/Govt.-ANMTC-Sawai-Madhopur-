@@ -2873,3 +2873,51 @@ loadTodayAttendance();
 
 </body>
 </html>
+<!-- ===== SAWAI MADHOPUR CITY FACILITIES ===== -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    // Find Facility dropdown
+    const facilitySelect =
+        document.getElementById("facility") ||
+        document.querySelector('select[name="facility"]');
+
+    if (!facilitySelect) {
+        console.log("Facility dropdown not found");
+        return;
+    }
+
+    // Only facilities located in Sawai Madhopur CITY
+    const facilities = [
+        "District Hospital Sawai Madhopur",
+        "Government ANMTC Sawai Madhopur",
+        "Urban Primary Health Centre (UPHC), Bazariya",
+        "Government Dispensary, Sawai Madhopur",
+        "Railway Hospital, Sawai Madhopur",
+        "T.B. Clinic, Sawai Madhopur",
+        "City Hospital, Sawai Madhopur",
+        "Other"
+    ];
+
+    // Remove old options
+    facilitySelect.innerHTML = "";
+
+    // Default option
+    const firstOption = document.createElement("option");
+    firstOption.value = "";
+    firstOption.textContent = "Select Facility";
+    firstOption.disabled = true;
+    firstOption.selected = true;
+    facilitySelect.appendChild(firstOption);
+
+    // Add facilities
+    facilities.forEach(function (facility) {
+        const option = document.createElement("option");
+        option.value = facility;
+        option.textContent = facility;
+        facilitySelect.appendChild(option);
+    });
+
+});
+</script>
+<!-- ===== END SAWAI MADHOPUR CITY FACILITIES ===== -->
