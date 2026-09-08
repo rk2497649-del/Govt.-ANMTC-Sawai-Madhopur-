@@ -4811,4 +4811,89 @@ button[onclick*="Attendance History"] {
         bottom: 15px !important;
     }
 }
+</style><style>
+/* ============================================================
+   FINAL BUTTON POSITION
+   TODAY'S ATTENDANCE = LEFT
+   ATTENDANCE HISTORY = RIGHT
+============================================================ */
+
+/* Today's Attendance */
+button[onclick*="todayAttendance"],
+button[onclick*="Today's Attendance"],
+button[id*="todayAttendance"],
+button[class*="todayAttendance"] {
+    position: fixed !important;
+    left: 12px !important;
+    right: auto !important;
+    bottom: 22px !important;
+
+    width: auto !important;
+    min-width: 165px !important;
+    max-width: calc(50vw - 20px) !important;
+
+    margin: 0 !important;
+    z-index: 999999 !important;
+
+    background: linear-gradient(135deg,#ff4f9a,#ff77b7) !important;
+    color: #fff !important;
+    border: 2px solid rgba(255,255,255,.8) !important;
+    border-radius: 30px !important;
+    box-shadow: 0 8px 25px rgba(255,79,154,.35) !important;
+}
+
+
+/* Attendance History */
+button[onclick*="attendanceHistory"],
+button[onclick*="Attendance History"],
+button[id*="attendanceHistory"],
+button[class*="attendanceHistory"],
+button[id*="history"],
+button[class*="history-button"] {
+    position: fixed !important;
+    right: 12px !important;
+    left: auto !important;
+    bottom: 22px !important;
+
+    width: auto !important;
+    min-width: 165px !important;
+    max-width: calc(50vw - 20px) !important;
+
+    margin: 0 !important;
+    z-index: 999998 !important;
+
+    border-radius: 30px !important;
+}
+
+
+/* Mobile */
+@media (max-width:600px) {
+
+    button[onclick*="todayAttendance"],
+    button[onclick*="Today's Attendance"],
+    button[id*="todayAttendance"],
+    button[class*="todayAttendance"] {
+        left: 8px !important;
+        right: auto !important;
+        bottom: 18px !important;
+        min-width: 150px !important;
+        max-width: 45vw !important;
+        font-size: 12px !important;
+        padding: 12px 10px !important;
+    }
+
+    button[onclick*="attendanceHistory"],
+    button[onclick*="Attendance History"],
+    button[id*="attendanceHistory"],
+    button[id*="history"],
+    button[class*="history-button"] {
+        right: 8px !important;
+        left: auto !important;
+        bottom: 18px !important;
+        min-width: 150px !important;
+        max-width: 45vw !important;
+        font-size: 12px !important;
+        padding: 12px 10px !important;
+    }
+}
 </style>
