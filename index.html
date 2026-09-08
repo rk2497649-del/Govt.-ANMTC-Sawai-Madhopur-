@@ -6463,3 +6463,689 @@ document.addEventListener("DOMContentLoaded", function () {
 <!-- ============================================================
      END FINAL PHOTO SAVE FIX
 ============================================================ -->
+<!-- ============================================================
+     FINAL PHOTO SAVE + DISPLAY FIX
+     GOVT ANMTC SAWAI MADHOPUR
+     ============================================================ -->
+
+<script>
+(function () {
+
+    console.log("FINAL PHOTO SAVE FIX LOADED");
+
+    /* =========================================================
+       SAVE / UPDATE ATTENDANCE WITH REAL FIREBASE PHOTO
+       ========================================================= */
+
+    async function saveAttendanceWithPhoto(type, student, coords, photo) {
+
+        if (!photo) {
+            throw new Error("Photo not selected.");
+        }
+
+        if (!coords) {
+            throw new Error("Location not captured.");
+        }
+
+        /* -----------------------------------------------------
+           UPLOAD REAL PHOTO TO FIREBASE STORAGE
+        ----------------------------------------------------- */
+
+        const photoData = await uploadPhoto(
+            photo,
+            type === "Morning Attendance" ? "morning" : "afternoon",
+            student
+        );
+
+        if (!photoData || !photoData.url) {
+            throw new Error("Photo upload failed.");
+        }
+
+        /* -----------------------------------------------------
+           FIND EXISTING ATTENDANCE OF SAME STUDENT + TYPE
+        ----------------------------------------------------- */
+
+        const snapshot = await db
+            .collection("attendance")
+            .where("date", "==", todayKey())
+            .where("roll", "==", student.roll)
+            .where("type", "==", type)
+            .limit(1)
+            .get();
+
+        /* -----------------------------------------------------
+           ATTENDANCE DATA
+        ----------------------------------------------------- */
+
+        const now = new Date();
+
+        const record = {
+
+            type: type,
+
+            name: student.name,
+
+            roll: student.roll,
+
+            year: student.year,
+
+            facility: student.facility,
+
+            date: todayKey(),
+
+            dateTime: getIndiaDateTime(),
+
+            location: coords.place || "Location captured",
+
+            latitude: coords.latitude,
+
+            longitude: coords.longitude,
+
+            photoURL: photoData.url,
+
+            photoPath: photoData.path,
+
+            photoName: photo.name,
+
+            photoUpdatedAt:
+                firebase.firestore.FieldValue.serverTimestamp(),
+
+            createdAt:
+                firebase.firestore.FieldValue.serverTimestamp()
+
+        };
+
+        /* -----------------------------------------------------
+           IF OLD RECORD EXISTS WITHOUT PHOTO:
+           UPDATE IT
+        ----------------------------------------------------- */
+
+        if (!snapshot.empty) {
+
+            const oldDoc = snapshot.docs[0];
+
+            const oldData = oldDoc.data() || {};
+
+            /*
+             * If photo already exists, don't create duplicate.
+             */
+
+            if (
+                oldData.photoURL ||
+                oldData.photoUrl ||
+                oldData.imageURL ||
+                oldData.imageUrl ||
+                oldData.photo
+            ) {
+
+                throw new Error(
+                    type +
+                    " for this Roll Number is already recorded today."
+                );
+
+            }
+
+            /*
+             * Existing attendance had no photo.
+             * Repair that record.
+             */
+
+            await oldDoc.ref.update({
+
+                photoURL: photoData.url,
+
+                photoPath: photoData.path,
+
+                photoName: photo.name,
+
+                photoUpdatedAt:
+                    firebase.firestore.FieldValue.serverTimestamp()
+
+            });
+
+            return {
+                updated: true,
+                photoURL: photoData.url
+            };
+        }
+
+        /* -----------------------------------------------------
+           NO RECORD EXISTS → CREATE NEW ATTENDANCE
+        ----------------------------------------------------- */
+
+        const newDoc = await db
+            .collection("attendance")
+            .add(record);
+
+        return {
+            created: true,
+            id: newDoc.id,
+            photoURL: photoData.url
+        };
+
+    }
+
+
+    /* =========================================================
+       FINAL MORNING ATTENDANCE
+       ========================================================= */
+
+    async function finalMorningAttendance() {
+
+        const button =
+            document.getElementById("morningBtn");
+
+        try {
+
+            /* STUDENT */
+
+            if (!validateStudent()) {
+                return;
+            }
+
+            const student =
+                getStudentDetails();
+
+
+            /* TIME */
+
+            const now = new Date();
+
+            const indiaHour =
+                parseInt(
+                    new Intl.DateTimeFormat(
+                        "en-IN",
+                        {
+                            timeZone: "Asia/Kolkata",
+                            hour: "2-digit",
+                            hour12: false
+                        }
+                    ).format(now)
+                );
+
+            const indiaMinute =
+                parseInt(
+                    new Intl.DateTimeFormat(
+                        "en-IN",
+                        {
+                            timeZone: "Asia/Kolkata",
+                            minute: "2-digit"
+                        }
+                    ).format(now)
+                );
+
+            const totalMinutes =
+                indiaHour * 60 + indiaMinute;
+
+
+            if (totalMinutes < 480) {
+
+                alert(
+                    "Morning attendance opens at 8:00 AM."
+                );
+
+                return;
+            }
+
+
+            /* PHOTO */
+
+            const photoInput =
+                document.getElementById(
+                    "morningPhoto"
+                );
+
+            const photo =
+                photoInput &&
+                photoInput.files &&
+                photoInput.files[0];
+
+
+            if (!photo) {
+
+                alert(
+                    "Please take/select your photo first 📸"
+                );
+
+                return;
+            }
+
+
+            /* LOCATION */
+
+            if (!morningCoords) {
+
+                alert(
+                    "Please capture your current location first 📍"
+                );
+
+                return;
+            }
+
+
+            /* BUTTON */
+
+            if (button) {
+
+                button.disabled = true;
+
+                button.innerText =
+                    "⏳ Uploading Photo & Saving...";
+
+            }
+
+
+            document.getElementById(
+                "morningProgress"
+            ).style.display = "block";
+
+
+            /* SAVE */
+
+            const result =
+                await saveAttendanceWithPhoto(
+                    "Morning Attendance",
+                    student,
+                    morningCoords,
+                    photo
+                );
+
+
+            /* SUCCESS */
+
+            showStatus(
+                "morningStatus",
+                "success",
+                result.updated
+                    ? "✅ PHOTO ADDED TO EXISTING MORNING ATTENDANCE!"
+                    : "✅ MORNING ATTENDANCE + PHOTO SAVED SUCCESSFULLY!"
+            );
+
+
+            const progress =
+                document.getElementById(
+                    "morningProgressBar"
+                );
+
+            if (progress) {
+                progress.style.width = "100%";
+            }
+
+
+            if (button) {
+
+                button.disabled = true;
+
+                button.innerText =
+                    "✅ Morning Attendance Completed";
+
+            }
+
+
+            /* REFRESH TODAY */
+
+            await loadTodayAttendance();
+
+
+        } catch (error) {
+
+            console.error(
+                "FINAL MORNING PHOTO ERROR:",
+                error
+            );
+
+
+            if (button) {
+
+                button.disabled = false;
+
+                button.innerText =
+                    "✅ Mark Morning Attendance";
+
+            }
+
+
+            showStatus(
+                "morningStatus",
+                "error",
+                "❌ " +
+                (
+                    error.message ||
+                    "Attendance/photo save failed."
+                )
+            );
+
+        }
+
+    }
+
+
+    /* =========================================================
+       FINAL COMPLETE / AFTERNOON ATTENDANCE
+       ========================================================= */
+
+    async function finalAfternoonAttendance() {
+
+        const button =
+            document.getElementById(
+                "afternoonBtn"
+            );
+
+        try {
+
+            /* STUDENT */
+
+            if (!validateStudent()) {
+                return;
+            }
+
+            const student =
+                getStudentDetails();
+
+
+            /* TIME */
+
+            const now = new Date();
+
+            const hour =
+                parseInt(
+                    new Intl.DateTimeFormat(
+                        "en-IN",
+                        {
+                            timeZone: "Asia/Kolkata",
+                            hour: "2-digit",
+                            hour12: false
+                        }
+                    ).format(now)
+                );
+
+            const minute =
+                parseInt(
+                    new Intl.DateTimeFormat(
+                        "en-IN",
+                        {
+                            timeZone: "Asia/Kolkata",
+                            minute: "2-digit"
+                        }
+                    ).format(now)
+                );
+
+            const totalMinutes =
+                hour * 60 + minute;
+
+
+            if (
+                totalMinutes < 720 ||
+                totalMinutes > 840
+            ) {
+
+                alert(
+                    "Complete Attendance is available only from 12:00 PM to 2:00 PM."
+                );
+
+                return;
+            }
+
+
+            /* MORNING MUST EXIST */
+
+            const morningSnapshot =
+                await db
+                    .collection("attendance")
+                    .where(
+                        "date",
+                        "==",
+                        todayKey()
+                    )
+                    .where(
+                        "roll",
+                        "==",
+                        student.roll
+                    )
+                    .where(
+                        "type",
+                        "==",
+                        "Morning Attendance"
+                    )
+                    .limit(1)
+                    .get();
+
+
+            if (morningSnapshot.empty) {
+
+                alert(
+                    "First complete Morning Attendance."
+                );
+
+                return;
+            }
+
+
+            /* PHOTO */
+
+            const photoInput =
+                document.getElementById(
+                    "afternoonPhoto"
+                );
+
+            const photo =
+                photoInput &&
+                photoInput.files &&
+                photoInput.files[0];
+
+
+            if (!photo) {
+
+                alert(
+                    "Please take/select your photo first 📸"
+                );
+
+                return;
+            }
+
+
+            /* LOCATION */
+
+            if (!afternoonCoords) {
+
+                alert(
+                    "Please capture your current location first 📍"
+                );
+
+                return;
+            }
+
+
+            /* BUTTON */
+
+            if (button) {
+
+                button.disabled = true;
+
+                button.innerText =
+                    "⏳ Uploading Photo & Saving...";
+
+            }
+
+
+            document.getElementById(
+                "afternoonProgress"
+            ).style.display = "block";
+
+
+            /* SAVE */
+
+            const result =
+                await saveAttendanceWithPhoto(
+                    "Complete Attendance",
+                    student,
+                    afternoonCoords,
+                    photo
+                );
+
+
+            /* SUCCESS */
+
+            showStatus(
+                "afternoonStatus",
+                "success",
+                result.updated
+                    ? "✅ PHOTO ADDED TO EXISTING COMPLETE ATTENDANCE!"
+                    : "✅ COMPLETE ATTENDANCE + PHOTO SAVED SUCCESSFULLY!"
+            );
+
+
+            const progress =
+                document.getElementById(
+                    "afternoonProgressBar"
+                );
+
+            if (progress) {
+                progress.style.width = "100%";
+            }
+
+
+            if (button) {
+
+                button.disabled = true;
+
+                button.innerText =
+                    "✅ Complete Attendance Completed";
+
+            }
+
+
+            /* REFRESH */
+
+            await loadTodayAttendance();
+
+
+        } catch (error) {
+
+            console.error(
+                "FINAL AFTERNOON PHOTO ERROR:",
+                error
+            );
+
+
+            if (button) {
+
+                button.disabled = false;
+
+                button.innerText =
+                    "🏁 Complete Attendance";
+
+            }
+
+
+            showStatus(
+                "afternoonStatus",
+                "error",
+                "❌ " +
+                (
+                    error.message ||
+                    "Attendance/photo save failed."
+                )
+            );
+
+        }
+
+    }
+
+
+    /* =========================================================
+       OVERRIDE BOTH ORIGINAL FUNCTIONS
+       ========================================================= */
+
+    window.markMorningAttendance =
+        finalMorningAttendance;
+
+    window.markAfternoonAttendance =
+        finalAfternoonAttendance;
+
+
+    /* =========================================================
+       FORCE BUTTONS TO USE FINAL FUNCTIONS
+       ========================================================= */
+
+    function attachFinalButtons() {
+
+        const morningBtn =
+            document.getElementById(
+                "morningBtn"
+            );
+
+        const afternoonBtn =
+            document.getElementById(
+                "afternoonBtn"
+            );
+
+
+        if (morningBtn) {
+
+            morningBtn.onclick =
+                function (event) {
+
+                    event.preventDefault();
+
+                    event.stopPropagation();
+
+                    finalMorningAttendance();
+
+                };
+
+        }
+
+
+        if (afternoonBtn) {
+
+            afternoonBtn.onclick =
+                function (event) {
+
+                    event.preventDefault();
+
+                    event.stopPropagation();
+
+                    finalAfternoonAttendance();
+
+                };
+
+        }
+
+    }
+
+
+    if (
+        document.readyState ===
+        "loading"
+    ) {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            attachFinalButtons
+        );
+
+    } else {
+
+        attachFinalButtons();
+
+    }
+
+
+    setTimeout(
+        attachFinalButtons,
+        500
+    );
+
+    setTimeout(
+        attachFinalButtons,
+        1500
+    );
+
+
+})();
+</script>
+
+<!-- ============================================================
+     END FINAL PHOTO SAVE + DISPLAY FIX
+     ============================================================ -->
