@@ -4168,6 +4168,38 @@ setTimeout(function(){
 },1000);
 
 })();
+/* YEAR + FACILITY FINAL FIX */
+
+(function () {
+
+    const fixStyle = document.createElement("style");
+
+    fixStyle.textContent = `
+        .attendance-row{
+            display:block;
+        }
+
+        .attendance-row .facility-year-row{
+            display:flex;
+            width:100%;
+            gap:10px;
+            margin-top:8px;
+        }
+
+        .attendance-row .facility-year-row > div{
+            width:50%;
+            text-align:left;
+        }
+
+        .attendance-row .facility-year-row b{
+            display:block;
+            margin-bottom:3px;
+        }
+    `;
+
+    document.head.appendChild(fixStyle);
+
+})();
 </script>
 <style>
 #anmYear{
