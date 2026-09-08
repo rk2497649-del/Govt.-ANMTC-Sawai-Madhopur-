@@ -4544,3 +4544,65 @@ document.addEventListener("DOMContentLoaded", function () {
 <!-- =========================================================
      END FINAL OVERRIDE
 ========================================================= -->
+<style>
+/* ============================================================
+   TODAY'S ATTENDANCE + ATTENDANCE HISTORY
+   SEPARATE POSITION FIX
+============================================================ */
+
+#todayAttendanceBtn,
+button[onclick*="todayAttendance"],
+button[onclick*="Today's Attendance"] {
+    display: block !important;
+    width: 90% !important;
+    max-width: 420px !important;
+    margin: 12px auto 18px auto !important;
+    padding: 13px 20px !important;
+
+    /* Pink colour */
+    background: linear-gradient(135deg, #ff4f9a, #ff77b7) !important;
+    color: white !important;
+
+    border: 2px solid rgba(255,255,255,0.65) !important;
+    border-radius: 14px !important;
+
+    box-shadow: 0 5px 18px rgba(255,79,154,0.30) !important;
+
+    font-weight: 700 !important;
+    font-size: 16px !important;
+    cursor: pointer !important;
+
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+/* Attendance History — अलग जगह */
+button[onclick*="attendanceHistory"],
+button[onclick*="Attendance History"] {
+    display: block !important;
+    width: 90% !important;
+    max-width: 420px !important;
+    margin: 18px auto 12px auto !important;
+    padding: 13px 20px !important;
+
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+/* Button दबाने पर छोटा effect */
+#todayAttendanceBtn:active,
+button[onclick*="todayAttendance"]:active {
+    transform: scale(0.97);
+}
+
+/* Mobile spacing */
+@media (max-width: 600px) {
+    #todayAttendanceBtn,
+    button[onclick*="todayAttendance"],
+    button[onclick*="Today's Attendance"],
+    button[onclick*="attendanceHistory"],
+    button[onclick*="Attendance History"] {
+        width: 92% !important;
+    }
+}
+</style>
