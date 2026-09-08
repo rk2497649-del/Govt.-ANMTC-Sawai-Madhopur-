@@ -3438,3 +3438,289 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 
 <!-- ===== FINAL MORNING ATTENDANCE FIX END ===== -->
+<!-- =========================================================
+     FINAL PHOTO DISPLAY + ATTENDANCE FIX
+     PASTE AT THE VERY END
+========================================================= -->
+
+<style>
+
+.attendance-photo{
+    width:50% !important;
+    min-height:210px !important;
+    background:#f8eaf1 !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    overflow:hidden !important;
+}
+
+.attendance-photo img{
+    width:100% !important;
+    height:100% !important;
+    min-height:210px !important;
+    object-fit:cover !important;
+    display:block !important;
+}
+
+@media(max-width:600px){
+
+    .attendance-photo{
+        min-height:190px !important;
+    }
+
+    .attendance-photo img{
+        min-height:190px !important;
+    }
+
+}
+
+</style>
+
+
+<script>
+
+(function(){
+
+    /* =====================================================
+       PHOTO URL
+    ===================================================== */
+
+    function getPhoto(data){
+
+        return (
+            data.photoURL ||
+            data.photoUrl ||
+            data.imageURL ||
+            data.imageUrl ||
+            data.photo ||
+            ""
+        );
+
+    }
+
+
+    /* =====================================================
+       PHOTO HTML
+    ===================================================== */
+
+    function makePhoto(data){
+
+        const url = getPhoto(data);
+
+        if(!url){
+
+            return `
+                <div class="photo-missing">
+                    📷<br>
+                    Photo unavailable
+                </div>
+            `;
+
+        }
+
+        return `
+            <img
+                src="${escapeAttribute(url)}"
+                alt="Attendance Photo"
+                loading="lazy"
+                onerror="
+                    this.onerror=null;
+                    this.style.display='none';
+                    this.parentElement.innerHTML=
+                    '<div class=&quot;photo-missing&quot;>📷<br>Photo unavailable</div>';
+                "
+            >
+        `;
+
+    }
+
+
+    /* =====================================================
+       FIX ATTENDANCE CARD
+    ===================================================== */
+
+    window.createAttendanceCard =
+    function(data){
+
+        const photo =
+            makePhoto(data);
+
+
+        return `
+
+            <div class="attendance-row">
+
+                <div class="attendance-info">
+
+                    <div class="attendance-title">
+
+                        ${
+                            data.type ===
+                            "Morning Attendance"
+
+                            ? "🌅 Morning Attendance"
+
+                            : "🌞 Complete Attendance"
+                        }
+
+                    </div>
+
+
+                    <b>👩 Name:</b><br>
+
+                    ${escapeHTML(
+                        data.name || "-"
+                    )}
+
+                    <br>
+
+
+                    <b>🔢 Roll No:</b>
+
+                    ${escapeHTML(
+                        data.roll || "-"
+                    )}
+
+                    <br>
+
+
+                    <b>🎓 Year:</b>
+
+                    ${escapeHTML(
+                        data.year || "-"
+                    )}
+
+                    <br>
+
+
+                    <b>🏥 Facility:</b><br>
+
+                    ${escapeHTML(
+                        data.facility || "-"
+                    )}
+
+                    <br>
+
+
+                    <b>📅 Date:</b>
+
+                    ${escapeHTML(
+                        data.date || "-"
+                    )}
+
+                    <br>
+
+
+                    <b>🕐 Time:</b>
+
+                    ${escapeHTML(
+                        data.dateTime || "-"
+                    )}
+
+                    <br>
+
+
+                    <b>📍 Location:</b><br>
+
+                    ${escapeHTML(
+                        data.location ||
+                        "Location captured"
+                    )}
+
+                    <br>
+
+
+                    <span class="badge badge-green">
+
+                        ✅ Present
+
+                    </span>
+
+                </div>
+
+
+                <div class="attendance-photo">
+
+                    ${photo}
+
+                </div>
+
+            </div>
+
+        `;
+
+    };
+
+
+    /* =====================================================
+       FORCE RELOAD TODAY ATTENDANCE
+    ===================================================== */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function(){
+
+            setTimeout(
+                function(){
+
+                    if(
+                        typeof loadTodayAttendance ===
+                        "function"
+                    ){
+
+                        loadTodayAttendance();
+
+                    }
+
+                },
+                700
+            );
+
+        }
+    );
+
+
+    /* =====================================================
+       FIX EXISTING ATTENDANCE PHOTOS
+    ===================================================== */
+
+    setInterval(
+        function(){
+
+            document
+            .querySelectorAll(
+                ".attendance-photo img"
+            )
+            .forEach(
+                function(img){
+
+                    img.style.width =
+                        "100%";
+
+                    img.style.height =
+                        "100%";
+
+                    img.style.minHeight =
+                        "210px";
+
+                    img.style.objectFit =
+                        "cover";
+
+                    img.style.display =
+                        "block";
+
+                }
+            );
+
+        },
+        1000
+    );
+
+})();
+
+</script>
+
+<!-- =========================================================
+     END FINAL PHOTO FIX
+========================================================= -->
