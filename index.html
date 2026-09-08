@@ -2921,3 +2921,70 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 <!-- ===== END SAWAI MADHOPUR CITY FACILITIES ===== -->
+<!-- ===== MORNING ATTENDANCE BUTTON FIX + FOOTER ===== -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    // Morning Attendance button ko functional banana
+    const morningBtn = document.getElementById("morningAttendanceBtn");
+
+    if (morningBtn) {
+        morningBtn.addEventListener("click", function () {
+
+            // Agar existing attendance function available hai
+            if (typeof markMorningAttendance === "function") {
+                markMorningAttendance();
+            } 
+            else if (typeof markAttendance === "function") {
+                markAttendance("Morning");
+            } 
+            else {
+                alert("Morning Attendance system is not connected properly.");
+            }
+        });
+    }
+
+});
+</script>
+
+<!-- ===== PREMIUM FOOTER ===== -->
+<style>
+.attendance-footer{
+    margin-top:40px;
+    padding:22px 15px;
+    text-align:center;
+    background:linear-gradient(135deg,#0f172a,#1e293b);
+    color:white;
+    border-radius:18px 18px 0 0;
+    box-shadow:0 -4px 15px rgba(0,0,0,0.15);
+}
+
+.attendance-footer .institution{
+    font-family:Georgia,serif;
+    font-size:20px;
+    font-weight:700;
+    letter-spacing:2px;
+    margin-bottom:7px;
+}
+
+.attendance-footer .managed{
+    font-family:"Trebuchet MS",sans-serif;
+    font-size:14px;
+    letter-spacing:1px;
+    opacity:.9;
+}
+
+.attendance-footer .name{
+    font-family:cursive;
+    font-size:17px;
+    font-weight:bold;
+    letter-spacing:.5px;
+}
+</style>
+
+<div class="attendance-footer">
+    <div class="institution">ANMTC SAWAI MADHOPUR</div>
+    <div class="managed">Attendance System Managed by</div>
+    <div class="name">Shivam Soni</div>
+</div>
+<!-- ===== END ===== -->
