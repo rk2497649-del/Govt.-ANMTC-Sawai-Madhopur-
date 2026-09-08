@@ -4998,3 +4998,67 @@ button[class*="history-button"] {
     border-radius:8px !important;
 }
 </style>
+<!-- ============================================================
+     REMOVE ALL TODAY'S ATTENDANCE FLOATING BUTTONS
+============================================================ -->
+
+<style>
+/* Hide known Today's Attendance floating buttons */
+#todayAttendanceSideBtn,
+#newTodayAttendanceBtn,
+#todayAttendanceFloatBtn,
+#todayAttendanceFloatingBtn,
+#todayAttendanceButton,
+#newTodayAttendanceButton {
+    display:none !important;
+}
+
+/* Hide floating buttons containing Today's Attendance text */
+button[onclick*="today"],
+button[id*="todayAttendance"],
+button[class*="todayAttendance"] {
+    display:none !important;
+}
+</style>
+
+<script>
+(function(){
+
+    function removeTodayFloatingButtons(){
+
+        document.querySelectorAll("button").forEach(function(btn){
+
+            const text = (btn.innerText || btn.textContent || "")
+                .trim()
+                .toLowerCase();
+
+            const id = (btn.id || "").toLowerCase();
+            const cls = (btn.className || "").toString().toLowerCase();
+
+            if(
+                text.includes("today's attendance") ||
+                text.includes("today attendance") ||
+                id.includes("todayattendance") ||
+                cls.includes("todayattendance")
+            ){
+                btn.remove();
+            }
+        });
+
+    }
+
+    /* Remove immediately */
+    removeTodayFloatingButtons();
+
+    /* Also remove if any old script creates it again */
+    const observer = new MutationObserver(function(){
+        removeTodayFloatingButtons();
+    });
+
+    observer.observe(document.body, {
+        childList:true,
+        subtree:true
+    });
+
+})();
+</script>
