@@ -4606,3 +4606,56 @@ button[onclick*="todayAttendance"]:active {
     }
 }
 </style>
+<style>
+/* ============================================================
+   FINAL BUTTON SEPARATION FIX
+============================================================ */
+
+/* TODAY'S ATTENDANCE */
+#todayAttendanceBtn,
+button[onclick*="todayAttendance"],
+button[onclick*="Today's Attendance"] {
+    position: relative !important;
+    display: block !important;
+    width: 90% !important;
+    max-width: 420px !important;
+    margin: 10px auto 25px auto !important;
+    clear: both !important;
+
+    background: linear-gradient(135deg, #ff4f9a, #ff77b7) !important;
+    color: #ffffff !important;
+
+    border: 2px solid rgba(255,255,255,0.75) !important;
+    border-radius: 14px !important;
+    padding: 13px 20px !important;
+
+    z-index: 20 !important;
+    box-shadow: 0 5px 18px rgba(255,79,154,0.30) !important;
+}
+
+
+/* ATTENDANCE HISTORY */
+button[onclick*="attendanceHistory"],
+button[onclick*="Attendance History"] {
+    position: relative !important;
+    display: block !important;
+    width: 90% !important;
+    max-width: 420px !important;
+    margin: 25px auto 15px auto !important;
+    clear: both !important;
+
+    z-index: 19 !important;
+}
+
+
+/* MOBILE */
+@media (max-width:600px) {
+    #todayAttendanceBtn,
+    button[onclick*="todayAttendance"],
+    button[onclick*="Today's Attendance"],
+    button[onclick*="attendanceHistory"],
+    button[onclick*="Attendance History"] {
+        width: 92% !important;
+    }
+}
+</style>
