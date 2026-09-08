@@ -5496,3 +5496,136 @@ document.addEventListener("DOMContentLoaded", function () {
 
 })();
 </script>
+<!-- ===== FINAL FIX - PASTE AT VERY END OF FILE ===== -->
+
+<script>
+(function () {
+
+  function roll() {
+    var e =
+      document.getElementById("rollNumber") ||
+      document.querySelector(
+        'input[name="roll"], input[id*="roll" i]'
+      );
+
+    return e ? String(e.value).trim().toLowerCase() : "";
+  }
+
+  function records() {
+    return Array.isArray(window.todayRecords)
+      ? window.todayRecords
+      : [];
+  }
+
+  window.updateButtons = function () {
+
+    var r = roll();
+
+    /* Sirf CURRENT STUDENT ke records */
+    var mine = records().filter(function (x) {
+      return String(x.roll || "")
+        .trim()
+        .toLowerCase() === r;
+    });
+
+    var morningDone = mine.some(function (x) {
+      return String(x.type || "").toLowerCase()
+        .includes("morning");
+    });
+
+    var completeDone = mine.some(function (x) {
+      return String(x.type || "").toLowerCase()
+        .includes("complete");
+    });
+
+    /* Buttons automatically find karo */
+    var buttons = Array.from(
+      document.querySelectorAll("button")
+    );
+
+    var morningBtn = buttons.find(function (b) {
+      return /morning attendance|mark morning/i.test(
+        b.innerText
+      );
+    });
+
+    var completeBtn = buttons.find(function (b) {
+      return /complete attendance/i.test(
+        b.innerText
+      );
+    });
+
+    /* ================= MORNING ================= */
+
+    if (morningBtn) {
+
+      if (morningDone) {
+
+        morningBtn.disabled = true;
+        morningBtn.innerText =
+          "✅ MORNING ATTENDANCE ALREADY RECORDED";
+
+      } else {
+
+        morningBtn.disabled = false;
+        morningBtn.innerText =
+          "✅ MARK MORNING ATTENDANCE";
+
+      }
+    }
+
+    /* ================= COMPLETE ================= */
+
+    if (completeBtn) {
+
+      if (completeDone) {
+
+        completeBtn.disabled = true;
+        completeBtn.innerText =
+          "✅ COMPLETE ATTENDANCE ALREADY RECORDED";
+
+      } else if (!morningDone) {
+
+        completeBtn.disabled = true;
+        completeBtn.innerText =
+          "🔒 MORNING ATTENDANCE REQUIRED";
+
+      } else {
+
+        completeBtn.disabled = false;
+        completeBtn.innerText =
+          "🏁 COMPLETE ATTENDANCE";
+
+      }
+    }
+  };
+
+
+  /* Roll/name/year/facility change hone par
+     student ka status turant update */
+
+  document.addEventListener("input", function () {
+    setTimeout(window.updateButtons, 100);
+  });
+
+  document.addEventListener("change", function () {
+    setTimeout(window.updateButtons, 100);
+  });
+
+
+  /* Firebase/data load hone ke baad bhi refresh */
+  setInterval(function () {
+    try {
+      window.updateButtons();
+    } catch (e) {}
+  }, 1000);
+
+
+  setTimeout(window.updateButtons, 500);
+  setTimeout(window.updateButtons, 1500);
+  setTimeout(window.updateButtons, 3000);
+
+})();
+</script>
+
+<!-- ===== END FINAL FIX ===== -->
