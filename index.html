@@ -5395,3 +5395,104 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 </script>
+<!-- ============================================================
+     FINAL WORKING TODAY'S ATTENDANCE TOGGLE
+     PASTE THIS AT THE VERY END
+============================================================ -->
+
+<style>
+#FINAL_TODAY_ATTENDANCE_BUTTON{
+    pointer-events:auto !important;
+    touch-action:manipulation !important;
+}
+</style>
+
+<script>
+(function(){
+
+    function makeTodayButtonWork(){
+
+        const btn =
+            document.getElementById("FINAL_TODAY_ATTENDANCE_BUTTON");
+
+        if(!btn) return;
+
+        /*
+         * ACTUAL TODAY'S ATTENDANCE CONTENT
+         * Your original page uses #todayAttendance
+         */
+        const panel =
+            document.getElementById("todayAttendance");
+
+        if(!panel) return;
+
+        /* Keep panel hidden initially */
+        if(!btn.dataset.ready){
+            panel.style.display = "none";
+            btn.dataset.open = "false";
+            btn.dataset.ready = "true";
+        }
+
+        /* Remove old handlers by cloning button */
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+
+        newBtn.addEventListener("click", function(e){
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            const isOpen =
+                newBtn.dataset.open === "true";
+
+            if(!isOpen){
+
+                /* OPEN */
+                panel.style.setProperty(
+                    "display",
+                    "block",
+                    "important"
+                );
+
+                newBtn.dataset.open = "true";
+
+                setTimeout(function(){
+                    panel.scrollIntoView({
+                        behavior:"smooth",
+                        block:"start"
+                    });
+                },100);
+
+            }else{
+
+                /* CLOSE */
+                panel.style.setProperty(
+                    "display",
+                    "none",
+                    "important"
+                );
+
+                newBtn.dataset.open = "false";
+            }
+
+        }, true);
+    }
+
+    /* Run after page is loaded */
+    if(document.readyState === "loading"){
+        document.addEventListener(
+            "DOMContentLoaded",
+            makeTodayButtonWork
+        );
+    }else{
+        makeTodayButtonWork();
+    }
+
+    /*
+     * Reconnect if another script changes the DOM
+     */
+    setTimeout(makeTodayButtonWork, 500);
+    setTimeout(makeTodayButtonWork, 1500);
+
+})();
+</script>
