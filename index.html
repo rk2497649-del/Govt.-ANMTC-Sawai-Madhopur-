@@ -2659,3 +2659,1071 @@ async function loadTodayAttendanceFromFirebase(){
 loadTodayAttendanceFromFirebase();
 
 </script>
+<script>
+/* =========================================================
+   FINAL ATTENDANCE SYSTEM PATCH
+   Permanent Date-wise History + Year + City Facilities
+   Present / Absent + Permanent Photos
+   ========================================================= */
+
+(function(){
+
+"use strict";
+
+/* =========================
+   CITY FACILITIES ONLY
+========================= */
+
+const CITY_FACILITIES = [
+    "Govt. ANMTC Sawai Madhopur",
+    "Government District / General Hospital, Sawai Madhopur",
+    "Government Medical College Teaching Hospital, Sawai Madhopur",
+    "Urban PHC Mantown, Sawai Madhopur",
+    "City Dispensary, Sawai Madhopur",
+    "Govt. Homeopathic Block Dispensary, City, Sawai Madhopur",
+    "Government Ayurvedic Hospital, Sawai Madhopur",
+    "Other"
+];
+
+/* =========================
+   ADD YEAR FIELD
+========================= */
+
+function addYearField(){
+
+    const roll = document.getElementById("rollNumber");
+    const facility = document.getElementById("facility");
+
+    if(!roll || !facility) return;
+
+    if(document.getElementById("anmYear")) return;
+
+    const label = document.createElement("label");
+    label.innerText = "Year / Batch";
+
+    const select = document.createElement("select");
+    select.id = "anmYear";
+
+    select.innerHTML = `
+        <option value="">Select Year / Batch</option>
+        <option value="1st Year">1st Year</option>
+        <option value="2nd Year">2nd Year</option>
+    `;
+
+    facility.parentNode.insertBefore(
+        label,
+        facility
+    );
+
+    facility.parentNode.insertBefore(
+        select,
+        facility
+    );
+}
+
+/* =========================
+   CITY FACILITY DROPDOWN
+========================= */
+
+function fixFacilityDropdown(){
+
+    const facility =
+        document.getElementById("facility");
+
+    if(!facility) return;
+
+    facility.innerHTML =
+        `<option value="">Select Hospital / Facility</option>`;
+
+    CITY_FACILITIES.forEach(function(name){
+
+        const option =
+            document.createElement("option");
+
+        option.value = name;
+        option.textContent = name;
+
+        facility.appendChild(option);
+
+    });
+}
+
+/* =========================
+   STUDENT DETAILS OVERRIDE
+========================= */
+
+window.getStudentDetails = function(){
+
+    return {
+
+        name:
+            document.getElementById("anmName")?.value.trim() || "",
+
+        roll:
+            document.getElementById("rollNumber")?.value.trim() || "",
+
+        year:
+            document.getElementById("anmYear")?.value || "",
+
+        facility:
+            document.getElementById("facility")?.value || ""
+
+    };
+
+};
+
+/* =========================
+   VALIDATION OVERRIDE
+========================= */
+
+window.validateStudent = function(){
+
+    const student =
+        window.getStudentDetails();
+
+    if(!student.name){
+
+        alert("Please enter ANM Name.");
+        return false;
+
+    }
+
+    if(!student.roll){
+
+        alert("Please enter Roll Number.");
+        return false;
+
+    }
+
+    if(!student.year){
+
+        alert("Please select Year / Batch.");
+        return false;
+
+    }
+
+    if(!student.facility){
+
+        alert("Please select Hospital / Facility.");
+        return false;
+
+    }
+
+    return true;
+
+};
+
+/* =========================
+   COMPRESS PHOTO
+   Saves photo inside Firebase
+========================= */
+
+function compressPhoto(file){
+
+    return new Promise(function(resolve,reject){
+
+        const reader =
+            new FileReader();
+
+        reader.onload = function(e){
+
+            const img =
+                new Image();
+
+            img.onload = function(){
+
+                const maxWidth = 650;
+
+                let width =
+                    img.width;
+
+                let height =
+                    img.height;
+
+                if(width > maxWidth){
+
+                    height =
+                        Math.round(
+                            height *
+                            maxWidth /
+                            width
+                        );
+
+                    width =
+                        maxWidth;
+
+                }
+
+                const canvas =
+                    document.createElement("canvas");
+
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx =
+                    canvas.getContext("2d");
+
+                ctx.drawImage(
+                    img,
+                    0,
+                    0,
+                    width,
+                    height
+                );
+
+                const data =
+                    canvas.toDataURL(
+                        "image/jpeg",
+                        0.65
+                    );
+
+                resolve(data);
+
+            };
+
+            img.onerror = reject;
+
+            img.src = e.target.result;
+
+        };
+
+        reader.onerror = reject;
+
+        reader.readAsDataURL(file);
+
+    });
+
+}
+
+/* =========================
+   FIREBASE SAVE
+========================= */
+
+window.saveAttendanceToFirebase =
+async function(data){
+
+    const docId =
+        data.date + "_" + data.roll;
+
+    await db
+        .collection("attendance")
+        .doc(docId)
+        .set(
+            data,
+            {merge:true}
+        );
+
+    console.log(
+        "Permanent Firebase attendance saved:",
+        docId
+    );
+
+};
+
+/* =========================
+   REGISTER STUDENT
+   Used for Present / Absent
+========================= */
+
+async function registerStudent(student){
+
+    if(!student.roll) return;
+
+    try{
+
+        await db
+            .collection("students")
+            .doc(student.roll)
+            .set({
+
+                name: student.name,
+                roll: student.roll,
+                year: student.year,
+                facility: student.facility,
+                updatedAt: new Date().toISOString()
+
+            },{
+                merge:true
+            });
+
+    }catch(error){
+
+        console.error(
+            "Student registration error:",
+            error
+        );
+
+    }
+
+}
+
+/* =========================
+   MORNING ATTENDANCE OVERRIDE
+========================= */
+
+window.markMorningAttendance =
+async function(){
+
+    if(!window.validateStudent())
+        return;
+
+    const now =
+        new Date();
+
+    const minutes =
+        now.getHours() * 60 +
+        now.getMinutes();
+
+    if(minutes < 480){
+
+        alert(
+            "Morning attendance opens at 8:00 AM."
+        );
+
+        return;
+
+    }
+
+    const photo =
+        document.getElementById(
+            "morningPhoto"
+        )?.files[0];
+
+    if(!photo){
+
+        alert(
+            "Please take/select your photo first 📸"
+        );
+
+        return;
+
+    }
+
+    if(!morningCoords){
+
+        alert(
+            "Please capture your current location first 📍"
+        );
+
+        return;
+
+    }
+
+    const student =
+        window.getStudentDetails();
+
+    try{
+
+        const photoData =
+            await compressPhoto(photo);
+
+        const record = {
+
+            name: student.name,
+
+            roll: student.roll,
+
+            year: student.year,
+
+            facility: student.facility,
+
+            date: todayKey(),
+
+            dateTime:
+                now.toLocaleString(
+                    "en-IN"
+                ),
+
+            morningTime:
+                now.toLocaleTimeString(
+                    "en-IN",
+                    {
+                        hour:"2-digit",
+                        minute:"2-digit",
+                        second:"2-digit",
+                        hour12:true
+                    }
+                ),
+
+            latitude:
+                morningCoords.latitude,
+
+            longitude:
+                morningCoords.longitude,
+
+            morningStatus:
+                "Completed",
+
+            morningPhotoData:
+                photoData
+
+        };
+
+        await window.saveAttendanceToFirebase(
+            record
+        );
+
+        await registerStudent(
+            student
+        );
+
+        /* Local control copy */
+
+        localStorage.setItem(
+            "anmMorning",
+            JSON.stringify(record)
+        );
+
+        localStorage.setItem(
+            "anmMorningPhoto",
+            photoData
+        );
+
+        showStatus(
+            "morningStatus",
+            "success",
+            "✅ Morning attendance permanently saved!"
+        );
+
+        updateButtons();
+
+        window.loadTodayAttendanceFromFirebase();
+
+    }catch(error){
+
+        console.error(error);
+
+        showStatus(
+            "morningStatus",
+            "error",
+            "❌ Attendance save nahi ho paayi. Internet check karein."
+        );
+
+    }
+
+};
+
+/* =========================
+   AFTERNOON ATTENDANCE
+========================= */
+
+window.markAfternoonAttendance =
+async function(){
+
+    if(!window.validateStudent())
+        return;
+
+    const now =
+        new Date();
+
+    const minutes =
+        now.getHours() * 60 +
+        now.getMinutes();
+
+    if(minutes < 720){
+
+        alert(
+            "Complete attendance opens at 12:00 PM."
+        );
+
+        return;
+
+    }
+
+    if(minutes > 840){
+
+        alert(
+            "Complete attendance is closed after 2:00 PM."
+        );
+
+        return;
+
+    }
+
+    const morning =
+        localStorage.getItem(
+            "anmMorning"
+        );
+
+    if(!morning){
+
+        alert(
+            "Morning attendance must be completed first."
+        );
+
+        return;
+
+    }
+
+    try{
+
+        const morningData =
+            JSON.parse(morning);
+
+        if(
+            morningData.date !==
+            todayKey()
+        ){
+
+            alert(
+                "Today's morning attendance is required first."
+            );
+
+            return;
+
+        }
+
+    }catch(e){
+
+        alert(
+            "Morning attendance data is invalid."
+        );
+
+        return;
+
+    }
+
+    const photo =
+        document.getElementById(
+            "afternoonPhoto"
+        )?.files[0];
+
+    if(!photo){
+
+        alert(
+            "Please take/select your photo first 📸"
+        );
+
+        return;
+
+    }
+
+    if(!afternoonCoords){
+
+        alert(
+            "Please capture your current location first 📍"
+        );
+
+        return;
+
+    }
+
+    const student =
+        window.getStudentDetails();
+
+    try{
+
+        const photoData =
+            await compressPhoto(photo);
+
+        const record = {
+
+            name: student.name,
+
+            roll: student.roll,
+
+            year: student.year,
+
+            facility: student.facility,
+
+            date: todayKey(),
+
+            afternoonTime:
+                now.toLocaleTimeString(
+                    "en-IN",
+                    {
+                        hour:"2-digit",
+                        minute:"2-digit",
+                        second:"2-digit",
+                        hour12:true
+                    }
+                ),
+
+            dateTime:
+                now.toLocaleString(
+                    "en-IN"
+                ),
+
+            latitude:
+                afternoonCoords.latitude,
+
+            longitude:
+                afternoonCoords.longitude,
+
+            afternoonStatus:
+                "Completed",
+
+            afternoonPhotoData:
+                photoData
+
+        };
+
+        await window.saveAttendanceToFirebase(
+            record
+        );
+
+        await registerStudent(
+            student
+        );
+
+        localStorage.setItem(
+            "anmAfternoon",
+            JSON.stringify(record)
+        );
+
+        localStorage.setItem(
+            "anmAfternoonPhoto",
+            photoData
+        );
+
+        showStatus(
+            "afternoonStatus",
+            "success",
+            "✅ Complete attendance permanently saved!"
+        );
+
+        updateButtons();
+
+        window.loadTodayAttendanceFromFirebase();
+
+    }catch(error){
+
+        console.error(error);
+
+        showStatus(
+            "afternoonStatus",
+            "error",
+            "❌ Attendance save nahi ho paayi. Internet check karein."
+        );
+
+    }
+
+};
+
+/* =========================
+   ESCAPE HTML
+========================= */
+
+function esc(value){
+
+    return String(
+        value ?? ""
+    )
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+/* =========================
+   ATTENDANCE CARD
+========================= */
+
+function attendanceCard(data){
+
+    const photo =
+        data.afternoonPhotoData ||
+        data.morningPhotoData ||
+        "";
+
+    return `
+
+    <div class="permanent-attendance-card">
+
+        <div class="attendance-info">
+
+            <div class="attendance-name">
+                👩‍⚕️ ${esc(data.name || "ANM")}
+            </div>
+
+            <div>
+                🔢 Roll No:
+                <b>${esc(data.roll || "-")}</b>
+            </div>
+
+            <div>
+                🎓 Year:
+                <b>${esc(data.year || "-")}</b>
+            </div>
+
+            <div>
+                🏥 Facility:
+                <b>${esc(data.facility || "-")}</b>
+            </div>
+
+            <div>
+                📅 Date:
+                <b>${esc(data.date || "-")}</b>
+            </div>
+
+            ${
+                data.morningStatus
+                ?
+                `
+                <div class="present-morning">
+                    🌅 Morning Present ✅
+                </div>
+
+                <div class="small">
+                    ⏰ ${esc(data.morningTime || "-")}
+                </div>
+
+                <div class="small">
+                    📍 ${esc(data.latitude || "-")},
+                    ${esc(data.longitude || "-")}
+                </div>
+                `
+                :
+                ""
+            }
+
+            ${
+                data.afternoonStatus
+                ?
+                `
+                <div class="present-complete">
+                    🌞 Complete Present ✅
+                </div>
+
+                <div class="small">
+                    ⏰ ${esc(data.afternoonTime || "-")}
+                </div>
+
+                <div class="small">
+                    📍 ${esc(data.latitude || "-")},
+                    ${esc(data.longitude || "-")}
+                </div>
+                `
+                :
+                ""
+            }
+
+        </div>
+
+        <div class="attendance-photo-box">
+
+            ${
+                photo
+                ?
+                `
+                <img
+                    src="${photo}"
+                    class="attendance-large-photo"
+                    onclick="window.open(this.src,'_blank')"
+                >
+                `
+                :
+                `
+                <div class="no-photo">
+                    📷<br>
+                    Photo Not Available
+                </div>
+                `
+            }
+
+        </div>
+
+    </div>
+
+    `;
+
+}
+
+/* =========================
+   TODAY DISPLAY
+========================= */
+
+window.loadTodayAttendanceFromFirebase =
+async function(){
+
+    const box =
+        document.getElementById(
+            "todayAttendance"
+        );
+
+    if(!box) return;
+
+    try{
+
+        const snapshot =
+            await db
+            .collection("attendance")
+            .where(
+                "date",
+                "==",
+                todayKey()
+            )
+            .get();
+
+        let html = "";
+
+        snapshot.forEach(function(doc){
+
+            html +=
+                attendanceCard(
+                    doc.data()
+                );
+
+        });
+
+        if(!html){
+
+            html =
+                `<div class="no-record">
+                    No attendance recorded today.
+                </div>`;
+
+        }
+
+        box.innerHTML =
+            html;
+
+    }catch(error){
+
+        console.error(error);
+
+        box.innerHTML =
+            "Unable to load attendance. Please check internet connection.";
+
+    }
+
+};
+
+window.displayTodayAttendance =
+function(){
+
+    window.loadTodayAttendanceFromFirebase();
+
+};
+
+/* =========================
+   ATTENDANCE HISTORY UI
+========================= */
+
+function createAttendanceButton(){
+
+    if(
+        document.getElementById(
+            "attendanceHistoryBtn"
+        )
+    ) return;
+
+    const container =
+        document.querySelector(
+            ".container"
+        );
+
+    if(!container) return;
+
+    const card =
+        document.createElement("div");
+
+    card.className =
+        "card attendance-history-button-card";
+
+    card.innerHTML = `
+
+        <h2>📊 Attendance History</h2>
+
+        <div class="small">
+            Purani date ki attendance,
+            Present/Absent aur complete details
+            yahan dekhein.
+        </div>
+
+        <button
+            id="attendanceHistoryBtn"
+            class="primary"
+            type="button"
+        >
+            📅 Open Attendance History
+        </button>
+
+    `;
+
+    container.appendChild(card);
+
+    document
+        .getElementById(
+            "attendanceHistoryBtn"
+        )
+        .onclick =
+        openAttendanceHistory;
+
+}
+
+/* =========================
+   HISTORY CARD
+========================= */
+
+function openAttendanceHistory(){
+
+    let old =
+        document.getElementById(
+            "attendanceHistoryPanel"
+        );
+
+    if(old){
+
+        old.scrollIntoView({
+            behavior:"smooth"
+        });
+
+        return;
+
+    }
+
+    const container =
+        document.querySelector(
+            ".container"
+        );
+
+    const panel =
+        document.createElement("div");
+
+    panel.id =
+        "attendanceHistoryPanel";
+
+    panel.className =
+        "card";
+
+    panel.innerHTML = `
+
+        <h2>📊 Attendance History</h2>
+
+        <label>Select Date</label>
+
+        <input
+            type="date"
+            id="historyDate"
+        >
+
+        <label>Year / Batch</label>
+
+        <select id="historyYear">
+
+            <option value="all">
+                All Years
+            </option>
+
+            <option value="1st Year">
+                1st Year
+            </option>
+
+            <option value="2nd Year">
+                2nd Year
+            </option>
+
+        </select>
+
+        <label>Facility</label>
+
+        <select id="historyFacility">
+
+            <option value="all">
+                All City Facilities
+            </option>
+
+            ${CITY_FACILITIES
+                .map(function(f){
+                    return `
+                    <option value="${esc(f)}">
+                        ${esc(f)}
+                    </option>
+                    `;
+                })
+                .join("")
+            }
+
+        </select>
+
+        <button
+            class="primary"
+            type="button"
+            onclick="loadSelectedAttendance()"
+        >
+            🔎 View Attendance
+        </button>
+
+        <button
+            class="success"
+            type="button"
+            onclick="loadSelectedAttendance()"
+        >
+            🔄 Refresh
+        </button>
+
+        <div
+            id="historyResult"
+            style="margin-top:18px;"
+        >
+            Select a date and click View Attendance.
+        </div>
+
+    `;
+
+    container.appendChild(panel);
+
+    const date =
+        document.getElementById(
+            "historyDate"
+        );
+
+    date.value =
+        todayKey();
+
+    panel.scrollIntoView({
+        behavior:"smooth"
+    });
+
+}
+
+/* =========================
+   LOAD SELECTED DATE
+========================= */
+
+window.loadSelectedAttendance =
+async function(){
+
+    const date =
+        document.getElementById(
+            "historyDate"
+        )?.value;
+
+    const year =
+        document.getElementById(
+            "historyYear"
+        )?.value || "all";
+
+    const facility =
+        document.getElementById(
+            "historyFacility"
+        )?.value || "all";
+
+    const result =
+        document.getElementById(
+            "historyResult"
+        );
+
+    if(!date){
+
+        alert(
+            "Please select date."
+        );
+
+        return;
+
+    }
+
+    result.innerHTML =
+        "⏳ Loading attendance...";
+
+    try{
+
+        const snapshot =
+            await db
+            .collection("attendance")
+            .where(
+                "d
