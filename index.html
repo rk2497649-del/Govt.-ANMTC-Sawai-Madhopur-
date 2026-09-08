@@ -5205,4 +5205,146 @@ document.getElementById("FINAL_TODAY_ATTENDANCE_BUTTON")
     }
 
 });
+</script><!-- ============================================================
+     FINAL TODAY'S ATTENDANCE BUTTON
+     ONE TAP = OPEN | SECOND TAP = CLOSE
+============================================================ -->
+
+<style>
+#FINAL_TODAY_ATTENDANCE_BUTTON{
+    position:fixed !important;
+    right:15px !important;
+    bottom:68px !important;
+
+    width:125px !important;
+    height:32px !important;
+
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+
+    background:rgba(255,20,147,.12) !important;
+    color:#ff1493 !important;
+
+    border:1.5px solid #ff1493 !important;
+    border-radius:9px !important;
+
+    font-family:Arial,sans-serif !important;
+    font-size:10px !important;
+    font-weight:800 !important;
+
+    z-index:2147483647 !important;
+    cursor:pointer !important;
+    user-select:none !important;
+
+    box-shadow:0 3px 10px rgba(255,20,147,.18) !important;
+
+    backdrop-filter:blur(5px);
+    -webkit-backdrop-filter:blur(5px);
+
+    transition:.2s ease;
+}
+
+#FINAL_TODAY_ATTENDANCE_BUTTON:active{
+    transform:scale(.94);
+}
+</style>
+
+<script>
+(function(){
+
+    const btn =
+        document.getElementById("FINAL_TODAY_ATTENDANCE_BUTTON");
+
+    if(!btn) return;
+
+    let attendanceOpen = false;
+
+    btn.onclick = function(e){
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        /* Find existing Today's Attendance content/button */
+        const elements =
+            document.querySelectorAll(
+                "button, a, [onclick], [id], [class]"
+            );
+
+        let target = null;
+
+        for(const el of elements){
+
+            if(el === btn) continue;
+
+            const text =
+                (el.innerText || el.textContent || "")
+                .trim()
+                .toLowerCase();
+
+            const id =
+                (el.id || "").toLowerCase();
+
+            const cls =
+                (typeof el.className === "string"
+                    ? el.className
+                    : "").toLowerCase();
+
+            if(
+                text === "today's attendance" ||
+                text === "today attendance" ||
+                id.includes("todayattendance") ||
+                cls.includes("todayattendance")
+            ){
+                target = el;
+                break;
+            }
+        }
+
+        if(target){
+
+            /* Existing button/function ko toggle karo */
+            target.click();
+
+            attendanceOpen = !attendanceOpen;
+
+        }else{
+
+            /* Agar existing button nahi mila,
+               common attendance containers ko toggle karo */
+
+            const panels = document.querySelectorAll(
+                "#newTodayAttendancePanel,"
+                + "#todayAttendancePanel,"
+                + "#todayAttendance,"
+                + ".today-attendance-panel,"
+                + ".todayAttendancePanel"
+            );
+
+            if(panels.length){
+
+                panels.forEach(function(panel){
+
+                    if(!attendanceOpen){
+                        panel.style.setProperty(
+                            "display",
+                            "block",
+                            "important"
+                        );
+                    }else{
+                        panel.style.setProperty(
+                            "display",
+                            "none",
+                            "important"
+                        );
+                    }
+
+                });
+
+                attendanceOpen = !attendanceOpen;
+            }
+        }
+    };
+
+})();
 </script>
