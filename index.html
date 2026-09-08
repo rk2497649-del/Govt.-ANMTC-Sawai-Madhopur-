@@ -3106,3 +3106,53 @@ document.addEventListener("DOMContentLoaded", function () {
 </div>
 
 <!-- ===== END ===== -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    // REMOVE OLD "SITE MANAGED BY SHIVAM SONI"
+    document.querySelectorAll("body *").forEach(function (el) {
+        if ((el.textContent || "").includes("✨ Site Managed by Shivam Soni ✨")) {
+            el.remove();
+        }
+    });
+
+    // PRESENT BUTTON FIX
+    document.addEventListener("click", async function (e) {
+
+        const btn = e.target.closest(
+            "#presentBtn, #markPresentBtn, #morningAttendanceBtn, #markMorningAttendance, .present-btn, .mark-present-btn"
+        );
+
+        if (!btn) return;
+
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        try {
+
+            if (typeof markMorningAttendance === "function") {
+                await markMorningAttendance();
+                return;
+            }
+
+            if (typeof markAttendance === "function") {
+                await markAttendance();
+                return;
+            }
+
+            if (typeof saveAttendance === "function") {
+                await saveAttendance();
+                return;
+            }
+
+            alert("Attendance function nahi mili. Button ID/function check karein.");
+
+        } catch (error) {
+            console.error(error);
+            alert("Attendance save nahi ho payi. Please try again.");
+        }
+
+    }, true);
+
+});
+</script>
