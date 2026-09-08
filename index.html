@@ -4778,3 +4778,37 @@ button[onclick*="Attendance History"] {
 
 }
 </style>
+<style>
+/* ============================================================
+   TODAY LEFT + HISTORY RIGHT
+============================================================ */
+
+/* TODAY'S ATTENDANCE — LEFT */
+.watery-today-floating {
+    left: 16px !important;
+    right: auto !important;
+    bottom: 105px !important;
+}
+
+/* ATTENDANCE HISTORY — RIGHT */
+.history-button {
+    right: 16px !important;
+    left: auto !important;
+    bottom: 20px !important;
+}
+
+/* MOBILE */
+@media (max-width:600px) {
+    .watery-today-floating {
+        left: 10px !important;
+        right: auto !important;
+        bottom: 105px !important;
+    }
+
+    .history-button {
+        right: 10px !important;
+        left: auto !important;
+        bottom: 15px !important;
+    }
+}
+</style>
