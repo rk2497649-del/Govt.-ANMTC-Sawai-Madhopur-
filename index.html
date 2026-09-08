@@ -4382,6 +4382,41 @@ setTimeout(function(){
     setTimeout(makeVertical, 1500);
 
 })();
+/* ===== FINAL VERTICAL STUDENT DETAILS ===== */
+(function () {
+
+    const style = document.createElement("style");
+
+    style.textContent = `
+        /* Student Details ko vertical */
+        #anmName,
+        #rollNumber,
+        #anmYear,
+        #facility {
+            width: 100% !important;
+            display: block !important;
+            margin-top: 5px !important;
+            margin-bottom: 12px !important;
+        }
+
+        /* Har field ka label upar */
+        #anmName + *,
+        #rollNumber + *,
+        #anmYear + *,
+        #facility + * {
+            width: 100% !important;
+        }
+
+        /* Year / Facility select */
+        #anmYear,
+        #facility {
+            min-height: 42px !important;
+        }
+    `;
+
+    document.head.appendChild(style);
+
+})();
 </script>
 
 
